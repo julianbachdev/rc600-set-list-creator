@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main {
+  @apply flex justify-between bg-gradient-to-b from-bg-primary-color to-bg-secondary-color h-screen;
+}
+
+.container {
+  @apply flex flex-col h-full min-w-[200px] max-w-[350px] p-3 border-2 border-gray-700 rounded-lg;
+}
+
+.list-container {
+  @apply p-2 border-2 border-gray-700 rounded-lg bg-gradient-to-b from-container-secondary-color to-container-primary-color overflow-y-auto scrollbar-hide;
+}
+
+.list-item {
+  @apply flex justify-between mb-1 p-2 text-white border border-bg-secondary-color rounded-md overflow-x-scroll scrollbar-hide whitespace-nowrap;
+}
+
+.item-color-even {
+  @apply bg-even-color hover:bg-even-hover;
+}
+
+.item-color-odd {
+  @apply bg-odd-color hover:bg-odd-hover;
+}
+
+.is-selected {
+  @apply bg-selected-color;
+}
+
+.header-container {
+  @apply flex flex-col justify-between h-[100px] text-white text-2xl rounded-lg bg-red-color;
+}
+
+.header-container-label {
+  @apply flex justify-between mx-2 mt-1;
+}
+
+.header-container-label-btn {
+  @apply text-sm px-2 rounded-md bg-blue-color hover:bg-blue-hover active:bg-blue-active;
+}
+
+.header-container-input {
+  @apply flex justify-between m-1;
+}
+
+.header-input {
+  @apply text-base text-black px-3 py-1 mr-2 w-full rounded-md;
+}
+
+.header-input-btn {
+  @apply text-base px-2 rounded-md bg-blue-color hover:bg-blue-hover active:bg-blue-active;
+}
+
+.btn-red {
+  @apply mx-1 px-1 rounded-md bg-red-color hover:bg-red-hover active:bg-red-active;
+}
+
+.btn-green {
+  @apply mx-1 px-1 rounded-md bg-green-color hover:bg-green-hover active:bg-green-active;
+}
+
+.btn-blue {
+  @apply text-sm px-2 rounded-md bg-blue-color hover:bg-blue-hover active:bg-blue-active;
+}
