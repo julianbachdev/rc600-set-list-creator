@@ -11,7 +11,6 @@ export function SetListsFinalProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    console.log("sdfbvdfvbdfbdfbfbdfbdfbdfbdfbfdb");
     if (window.electron) {
       window.electron.ipcRenderer.setDataSaved();
     }

@@ -55,13 +55,13 @@
 }
 
 .btn-red {
-  @apply mx-1 px-1 rounded-md bg-red-color hover:bg-red-hover active:bg-red-active;
+  @apply text-text-color text-sm mx-1 px-1 rounded-md bg-red-color hover:bg-red-hover active:bg-red-active;
 }
 
 .btn-green {
-  @apply mx-1 px-1 rounded-md bg-green-color hover:bg-green-hover active:bg-green-active;
+  @apply text-text-color text-sm mx-1 px-1 rounded-md bg-green-color hover:bg-green-hover active:bg-green-active;
 }
 
 .btn-blue {
-  @apply text-sm px-2 rounded-md bg-blue-color hover:bg-blue-hover active:bg-blue-active;
+  @apply text-text-color text-sm px-2 rounded-md bg-blue-color hover:bg-blue-hover active:bg-blue-active;
 }
