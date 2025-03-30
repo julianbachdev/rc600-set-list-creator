@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\""
   },
   "keywords": [],
   "author": {
@@ -34,6 +35,9 @@
     "electron": "27.0.4",
     "node-loader": "^2.0.0",
     "postcss-loader": "^7.3.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-sort-imports": "^1.8.6",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "style-loader": "^3.3.3",
     "tailwindcss": "^3.3.5"
   },

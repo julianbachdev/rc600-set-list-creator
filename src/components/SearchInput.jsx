@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useSearchSongsContext } from "../contexts/SearchSongsContext";
+import { useSearchSongsContext } from '../contexts/SearchSongsContext';
+import React, { useState, useEffect } from 'react';
 
 function SearchInput() {
   const { setSearchSongs } = useSearchSongsContext();
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   function handleClearInput() {
-    setInputValue("");
+    setInputValue('');
   }
 
   useEffect(() => {
@@ -21,7 +21,7 @@ function SearchInput() {
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={e => setInputValue(e.target.value)}
         className="header-input"
         placeholder="Search song"
       />

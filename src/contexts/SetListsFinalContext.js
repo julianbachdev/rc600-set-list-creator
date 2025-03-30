@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { loadSetListsData } from "../utils/dataHelpers";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { loadSetListsData } from '../utils/dataHelpers';
 
 const SetListsFinalContext = createContext();
 
@@ -7,7 +7,7 @@ export function SetListsFinalProvider({ children }) {
   const [setListsFinal, setSetListsFinal] = useState([]);
 
   useEffect(() => {
-    loadSetListsData("setListsFinal", setSetListsFinal);
+    loadSetListsData('setListsFinal', setSetListsFinal);
   }, []);
 
   useEffect(() => {
@@ -31,9 +31,7 @@ export function SetListsFinalProvider({ children }) {
 export function useSetListsFinalContext() {
   const context = useContext(SetListsFinalContext);
   if (!context) {
-    throw new Error(
-      "useSetListsFinalContext must be used within a SetListsFinalProvider"
-    );
+    throw new Error('useSetListsFinalContext must be used within a SetListsFinalProvider');
   }
   return context;
 }

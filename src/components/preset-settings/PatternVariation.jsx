@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-const variations = ["Variation", "A", "B", "C", "D"];
+const variations = ['Variation', 'A', 'B', 'C', 'D'];
 
 function PatternVariation() {
   return (
     <select className="header-input">
-      {variations.map((beat) => (
+      {variations.map(beat => (
         <option key={beat} value={beat}>
           {beat}
         </option>

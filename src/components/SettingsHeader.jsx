@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import { useRepertoireContext } from "../contexts/RepertoireContext.js";
-import { extractTxtFiles } from "../utils/utilityHelpers.js";
-import { hardSaveSetListsData } from "../utils/dataHelpers.js";
-import { useSetListsFinalContext } from "../contexts/SetListsFinalContext.js";
-import { useSetListsContext } from "../contexts/SetListsContext.js";
+import { extractTxtFileContent, extractTxtFileName } from '../utils/utilityHelpers.js';
+import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
+import { useRepertoireContext } from '../contexts/RepertoireContext.js';
+import { useSetListsContext } from '../contexts/SetListsContext.js';
+import { hardSaveSetListsData } from '../utils/dataHelpers.js';
+import React, { useEffect } from 'react';
 
 function SettingsHeader() {
   const { setRepertoire } = useRepertoireContext();
@@ -20,22 +20,26 @@ function SettingsHeader() {
 
   function handleRefreshFiles() {
     window.electron.ipcRenderer
-      .invoke("refresh-files")
-      .then((files) => {
-        const extractedTxtFiles = extractTxtFiles(files);
-        setRepertoire(extractedTxtFiles);
+      .invoke('refresh-files')
+      .then(files => {
+        const extractedTxtFiles = extractTxtFileName(files);
+        const extractedTxtFilesContent = extractTxtFileContent(files);
+        // setRepertoire(extractedTxtFiles);
+        setRepertoire(files);
       })
-      .catch((error) => console.error("Error refreshing files:", error));
+      .catch(error => console.error('Error refreshing files:', error));
   }
 
   function handleOpenFolder() {
     window.electron.ipcRenderer
-      .invoke("open-folder")
-      .then((files) => {
-        const extractedTxtFiles = extractTxtFiles(files);
-        setRepertoire(extractedTxtFiles);
+      .invoke('open-folder')
+      .then(files => {
+        const extractedTxtFiles = extractTxtFileName(files);
+        const extractedTxtFilesContent = extractTxtFileContent(files);
+        // setRepertoire(extractedTxtFiles);
+        setRepertoire(files);
       })
-      .catch((error) => console.error("Error opening folder:", error));
+      .catch(error => console.error('Error opening folder:', error));
   }
 
   useEffect(() => {

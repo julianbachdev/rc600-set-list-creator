@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { useSetListsContext } from "../contexts/SetListsContext";
-import { createSetList } from "../utils/setListHelpers";
-import { useSelectedSetListContext } from "../contexts/SelectedSetListContext";
+import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
+import { useSetListsContext } from '../contexts/SetListsContext';
+import { createSetList } from '../utils/setListHelpers';
+import React, { useState } from 'react';
 
 function SetListsHeader() {
-  const [newSetList, setNewSetList] = useState("");
+  const [newSetList, setNewSetList] = useState('');
   const { setLists, setSetLists } = useSetListsContext();
   const { setSelectedSetList } = useSelectedSetListContext();
 
@@ -17,16 +17,16 @@ function SetListsHeader() {
     <div className="header-container">
       <div className="header-container-label">SET LISTS</div>
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           if (newSetList.trim()) handleCreateSetList();
-          setNewSetList("");
+          setNewSetList('');
         }}
         className="header-container-input"
       >
         <input
           value={newSetList}
-          onChange={(e) => setNewSetList(e.target.value)}
+          onChange={e => setNewSetList(e.target.value)}
           className="header-input"
           placeholder="Enter name"
         />

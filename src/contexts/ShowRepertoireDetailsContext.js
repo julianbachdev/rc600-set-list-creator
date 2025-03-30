@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from 'react';
 
 const ShowRepertoireDetailsContext = createContext();
 
@@ -6,7 +6,7 @@ export function ShowRepertoireDetailsProvider({ children }) {
   const [showRepertoireDetails, setShowRepertoireDetails] = useState(false);
 
   function handleSetShowRepertoireDetails() {
-    setShowRepertoireDetails((prev) => !prev);
+    setShowRepertoireDetails(prev => !prev);
   }
 
   return (
@@ -26,7 +26,7 @@ export function useShowRepertoireDetailsContext() {
   const context = useContext(ShowRepertoireDetailsContext);
   if (!context) {
     throw new Error(
-      "useShowRepertoireDetailsContext must be used within a ShowRepertoireDetailsProvider"
+      'useShowRepertoireDetailsContext must be used within a ShowRepertoireDetailsProvider'
     );
   }
   return context;

@@ -1,6 +1,6 @@
-import React from "react";
-import PresetSettingsContainer from "./preset-settings/PresetSettingsContainer.jsx";
-import CreateRc600Files from "./preset-settings/CreateRc600Files.jsx";
+import PresetSettingsContainer from './preset-settings/PresetSettingsContainer.jsx';
+import CreateRc600Files from './preset-settings/CreateRc600Files.jsx';
+import React from 'react';
 
 function SettingsContainer() {
   return (

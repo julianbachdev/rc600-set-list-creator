@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { loadSetListsData } from "../utils/dataHelpers";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { loadSetListsData } from '../utils/dataHelpers';
 
 const SetListsContext = createContext();
 
@@ -7,7 +7,7 @@ export function SetListsProvider({ children }) {
   const [setLists, setSetLists] = useState([]);
 
   useEffect(() => {
-    loadSetListsData("setLists", setSetLists);
+    loadSetListsData('setLists', setSetLists);
   }, []);
 
   useEffect(() => {
@@ -31,9 +31,7 @@ export function SetListsProvider({ children }) {
 export function useSetListsContext() {
   const context = useContext(SetListsContext);
   if (!context) {
-    throw new Error(
-      "useSetListsContext must be used within a SetListsProvider"
-    );
+    throw new Error('useSetListsContext must be used within a SetListsProvider');
   }
   return context;
 }

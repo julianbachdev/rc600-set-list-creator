@@ -1,7 +1,6 @@
 export async function loadSetListsData(property, setContext) {
   try {
-    const dataFromFile =
-      await window.electron.ipcRenderer.loadSetListsDataFromFile();
+    const dataFromFile = await window.electron.ipcRenderer.loadSetListsDataFromFile();
 
     if (dataFromFile?.[property]) {
       setContext(dataFromFile[property]);
@@ -16,8 +15,8 @@ export async function loadSetListsData(property, setContext) {
 
 export async function hardSaveSetListsData(data) {
   try {
-    await window.electron.ipcRenderer.invoke("hard-save-setlists-data", data);
+    await window.electron.ipcRenderer.invoke('hard-save-setlists-data', data);
   } catch (error) {
-    console.error("Error saving set lists data to local drive:", error);
+    console.error('Error saving set lists data to local drive:', error);
   }
 }

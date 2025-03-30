@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from 'react';
 
 const ShowSetListSongsDetailsContext = createContext();
 
@@ -6,7 +6,7 @@ export function ShowSetListSongsDetailsProvider({ children }) {
   const [showSetListSongsDetails, setShowSetListSongsDetails] = useState(false);
 
   function handleSetShowSetListSongsDetails() {
-    setShowSetListSongsDetails((prev) => !prev);
+    setShowSetListSongsDetails(prev => !prev);
   }
 
   return (
@@ -26,7 +26,7 @@ export function useShowSetListSongsDetailsContext() {
   const context = useContext(ShowSetListSongsDetailsContext);
   if (!context) {
     throw new Error(
-      "useShowSetListSongsDetailsContext must be used within a ShowSetListSongsDetailsProvider"
+      'useShowSetListSongsDetailsContext must be used within a ShowSetListSongsDetailsProvider'
     );
   }
   return context;

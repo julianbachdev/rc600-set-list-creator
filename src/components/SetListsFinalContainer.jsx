@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Reorder } from "framer-motion";
-import { useSetListsFinalContext } from "../contexts/SetListsFinalContext";
-import { useSelectedSetListContext } from "../contexts/SelectedSetListContext";
 import {
   toggleSelectedSetList,
   removeSetListFinal,
   handleAutoScroll,
-} from "../utils/setListHelpers";
+} from '../utils/setListHelpers';
+import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
+import { useSetListsFinalContext } from '../contexts/SetListsFinalContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { Reorder } from 'framer-motion';
 
 function SetListsFinalContainer() {
   const [isDragging, setIsDragging] = useState(false);
@@ -32,16 +32,13 @@ function SetListsFinalContainer() {
       axis="y"
       values={setListsFinal}
       onReorder={setSetListsFinal}
-      className="h-1/2 list-container overflow-y-auto"
+      className="list-container h-1/2 overflow-y-auto"
       ref={listRef}
     >
       {setListsFinal.map((item, index) => {
         const isSelected = item === selectedSetList;
-        const itemColor =
-          index % 2 === 0 ? "item-color-even" : "item-color-odd";
-        const itemClass = isSelected
-          ? "list-item is-selected"
-          : `list-item ${itemColor}`;
+        const itemColor = index % 2 === 0 ? 'item-color-even' : 'item-color-odd';
+        const itemClass = isSelected ? 'list-item is-selected' : `list-item ${itemColor}`;
 
         return (
           <Reorder.Item
@@ -56,7 +53,7 @@ function SetListsFinalContainer() {
             {item}
             <button
               className="btn-red"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 handleRemoveSetListFinal(e, item);
               }}

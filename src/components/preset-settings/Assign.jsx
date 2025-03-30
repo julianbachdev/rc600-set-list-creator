@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
 function Assign() {
   return (
-    <div className="grid grid-cols-4 gap-2 mb-2 w-full">
+    <div className="mb-2 grid w-full grid-cols-4 gap-2">
       <button className="btn-blue py-2">Assign 1</button>
       <button className="btn-blue py-2">Assign 2</button>
       <button className="btn-blue py-2">Assign 3</button>
