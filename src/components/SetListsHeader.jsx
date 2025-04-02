@@ -4,6 +4,7 @@ import { createSetList } from '../utils/setListHelpers';
 import React, { useState } from 'react';
 
 function SetListsHeader() {
+  //console.log('SETLISTS HEADER');
   const [newSetList, setNewSetList] = useState('');
   const { setLists, setSetLists } = useSetListsContext();
   const { setSelectedSetList } = useSelectedSetListContext();

@@ -3,6 +3,8 @@ import CreateRc600Files from './preset-settings/CreateRc600Files.jsx';
 import React from 'react';
 
 function SettingsContainer() {
+  // console.log('SETTINGS CONTAINER');
+
   return (
     <div className="container justify-between">
       <PresetSettingsContainer />

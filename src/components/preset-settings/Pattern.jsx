@@ -1,24 +1,11 @@
 import React from 'react';
 
-const beats = [
-  'Pattern',
-  'Shuffle',
-  'Swing',
-  'Half-Time',
-  'Double-Time',
-  'Triplet Feel',
-  'Off-Beat',
-  'Funk Groove',
-  'Syncopated',
-  'Polyrhythm',
-];
-
-function Pattern() {
+function Pattern({ value, onChange, patterns }) {
   return (
-    <select className="header-input">
-      {beats.map(beat => (
-        <option key={beat} value={beat}>
-          {beat}
+    <select className="header-input" value={value} onChange={e => onChange(e.target.value)}>
+      {patterns.map(pattern => (
+        <option key={pattern.name} value={pattern.name}>
+          {pattern.name}
         </option>
       ))}
     </select>

@@ -1,13 +1,14 @@
+import { getVariations } from '../../utils/settingTreeHelpers';
 import React from 'react';
 
-const variations = ['Variation', 'A', 'B', 'C', 'D'];
+const variations = getVariations();
 
 function PatternVariation() {
   return (
     <select className="header-input">
-      {variations.map(beat => (
-        <option key={beat} value={beat}>
-          {beat}
+      {variations.map(variation => (
+        <option key={variation.name} value={variation.name}>
+          {variation.name}
         </option>
       ))}
     </select>

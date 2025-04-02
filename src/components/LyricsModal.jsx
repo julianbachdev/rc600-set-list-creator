@@ -6,12 +6,13 @@ import { formatSongName } from '../utils/utilityHelpers';
 import React, { useEffect, useState } from 'react';
 
 function Modal() {
+  // console.log('MODAL');
+  const { songFile, repertoireOrSetList, handleToggleOpenLyricsModal } =
+    useToggleOpenLyricsModalContext();
+  const [showDetails, setShowDetails] = useState(false);
   const { repertoire } = useRepertoireContext();
   const { setLists } = useSetListsContext();
   const { selectedSetList } = useSelectedSetListContext();
-  const { songFile, toggleOpenLyricsModal, repertoireOrSetList, handleToggleOpenLyricsModal } =
-    useToggleOpenLyricsModalContext();
-  const [showDetails, setShowDetails] = useState(false);
 
   function toggleDetails() {
     setShowDetails(prev => !prev);
@@ -43,8 +44,6 @@ function Modal() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [handleToggleOpenLyricsModal]);
-
-  if (!toggleOpenLyricsModal) return null;
 
   return (
     <div className="modal-container">

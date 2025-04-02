@@ -2,6 +2,7 @@ import { useSearchSongsContext } from '../contexts/SearchSongsContext';
 import React, { useState, useEffect } from 'react';
 
 function SearchInput() {
+  // console.log('SEARCH INPUT');
   const { setSearchSongs } = useSearchSongsContext();
   const [inputValue, setInputValue] = useState('');
 

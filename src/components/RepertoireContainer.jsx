@@ -8,6 +8,8 @@ import { formatSongName } from '../utils/utilityHelpers.js';
 import React from 'react';
 
 function RepertoireContainer() {
+  // console.log('REPERTOIRE CONTAINER');
+
   const { repertoire } = useRepertoireContext();
   const { searchSongs } = useSearchSongsContext();
   const { setLists, setSetLists } = useSetListsContext();
@@ -21,6 +23,7 @@ function RepertoireContainer() {
   });
 
   function handleAddRemoveSongsFromSetList(song) {
+    if (!selectedSetList) return;
     setSetLists(prev =>
       prev.map(set => {
         if (set.setListName !== selectedSetList) return set;

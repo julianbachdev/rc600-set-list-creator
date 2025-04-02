@@ -6,6 +6,8 @@ import { hardSaveSetListsData } from '../utils/dataHelpers.js';
 import React, { useEffect } from 'react';
 
 function SettingsHeader() {
+  // console.log('SETTINGS HEADER');
+
   const { setRepertoire } = useRepertoireContext();
   const { setLists } = useSetListsContext();
   const { setListsFinal } = useSetListsFinalContext();

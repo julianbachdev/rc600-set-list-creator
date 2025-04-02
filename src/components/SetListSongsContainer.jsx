@@ -12,6 +12,8 @@ import React, { useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListSongsContainer() {
+  // console.log('SETLIST SONGS CONTAINER');
+
   const { setLists, setSetLists } = useSetListsContext();
   const { selectedSetList } = useSelectedSetListContext();
   const { showSetListSongsDetails } = useShowSetListSongsDetailsContext();

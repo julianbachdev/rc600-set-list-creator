@@ -2,6 +2,8 @@ import { useShowSetListSongsDetailsContext } from '../contexts/ShowSetListSongsD
 import React from 'react';
 
 function SetListSongsHeader() {
+  // console.log('SETLIST SONGS HEADER');
+
   const { showSetListSongsDetails, setShowSetListSongsDetails } =
     useShowSetListSongsDetailsContext();
 

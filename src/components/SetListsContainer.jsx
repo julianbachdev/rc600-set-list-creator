@@ -6,6 +6,8 @@ import { Reorder } from 'framer-motion';
 import React, { useState } from 'react';
 
 function SetListsContainer() {
+  // console.log('SETLIST CONTAINER');
+
   const [isDragging, setIsDragging] = useState(false);
   const { setLists, setSetLists } = useSetListsContext();
   const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();

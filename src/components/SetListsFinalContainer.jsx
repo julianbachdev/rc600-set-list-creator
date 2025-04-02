@@ -9,6 +9,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListsFinalContainer() {
+  // console.log('SETLIST FINAL CONTAINER');
+
   const [isDragging, setIsDragging] = useState(false);
   const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
   const { setListsFinal, setSetListsFinal } = useSetListsFinalContext();

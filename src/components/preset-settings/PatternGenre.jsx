@@ -1,24 +1,11 @@
 import React from 'react';
 
-const beats = [
-  'Genre',
-  'Shuffle',
-  'Swing',
-  'Half-Time',
-  'Double-Time',
-  'Triplet Feel',
-  'Off-Beat',
-  'Funk Groove',
-  'Syncopated',
-  'Polyrhythm',
-];
-
-function PatternGenre() {
+function PatternGenre({ value, onChange, genres }) {
   return (
-    <select className="header-input">
-      {beats.map(beat => (
-        <option key={beat} value={beat}>
-          {beat}
+    <select className="header-input" value={value} onChange={e => onChange(e.target.value)}>
+      {genres.map(genre => (
+        <option key={genre.name} value={genre.name}>
+          {genre.name}
         </option>
       ))}
     </select>

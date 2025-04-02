@@ -157,6 +157,30 @@ ipcMain.handle('load-setlists-data-from-file', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+ipcMain.handle('create-xml-file', async () => {
+  try {
+    const desktopPath = path.join(app.getPath('home'), 'Desktop');
+    const filePath = path.join(desktopPath, 'default.xml');
+
+    const defaultXMLContent = `<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <item>
+    <name>Example Item</name>
+    <value>123</value>
+  </item>
+</root>`;
+
+    fs.writeFileSync(filePath, defaultXMLContent, 'utf-8');
+    console.log('XML file created successfully on the desktop.');
+    return { success: true, message: 'XML file created successfully.' };
+  } catch (error) {
+    console.error('Error creating XML file:', error);
+    return { success: false, message: 'Failed to create XML file.' };
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
 ipcMain.on('data-is-saved', () => {
   console.log('Data-is-saved flag set to false');
   dataSaved = false;

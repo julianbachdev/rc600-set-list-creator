@@ -13,10 +13,13 @@ import './App.css';
 
 import { ShowSetListSongsDetailsProvider } from './contexts/ShowSetListSongsDetailsContext.js';
 import { ShowRepertoireDetailsProvider } from './contexts/ShowRepertoireDetailsContext.js';
+import { useToggleOpenLyricsModalContext } from './contexts/ToggleOpenLyricsModalContext';
 import { SearchSongsProvider } from './contexts/SearchSongsContext.js';
 import LyricsModal from './components/LyricsModal.jsx';
 
 function App() {
+  const { toggleOpenLyricsModal } = useToggleOpenLyricsModalContext();
+
   return (
     <div className="main">
       <div className="container">
@@ -47,7 +50,7 @@ function App() {
         <SettingsContainer />
       </div>
 
-      <LyricsModal />
+      {toggleOpenLyricsModal && <LyricsModal />}
     </div>
   );
 }
