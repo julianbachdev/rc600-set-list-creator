@@ -124,10 +124,10 @@ const rhythmMenuData = [
           { name: 'SIDE STICK3', value: 2 },
           { name: 'SIDE STICK4', value: 3 },
           { name: 'SHUFFLE1', value: 4 },
-          { name: '8BEAT', value: 5 },
-          { name: '16BEAT1', value: 6 },
-          { name: '16BEAT2', value: 7 },
-          { name: 'SWING', value: 8 },
+          { name: '8BEAT', value: 6 }, // 5 Skipped on hardware
+          { name: '16BEAT1', value: 7 },
+          { name: '16BEAT2', value: 8 },
+          { name: 'SWING', value: 9 },
         ],
       },
       {
@@ -137,7 +137,7 @@ const rhythmMenuData = [
           { name: '12BARS', value: 0 },
           { name: 'SHUFFLE1', value: 1 },
           { name: 'SHUFFLE2', value: 2 },
-          { name: 'SWING', value: 3 },
+          { name: 'SWING', value: 5 }, // 3 & 4 Skipped on hardware
         ],
       },
       {
@@ -228,12 +228,12 @@ const rhythmMenuData = [
           { name: '16BEAT1', value: 2 },
           { name: '16BEAT2', value: 3 },
           { name: 'PERCUS1', value: 4 },
-          { name: 'SHUFFLE1', value: 5 },
-          { name: 'SHUFFLE2', value: 6 },
-          { name: 'SIDE STICK1', value: 7 },
-          { name: 'SIDE STICK2', value: 8 },
-          { name: 'SWING1', value: 9 },
-          { name: 'SWING2', value: 10 },
+          { name: 'SHUFFLE1', value: 6 }, // 5 Skipped on hardware
+          { name: 'SHUFFLE2', value: 7 },
+          { name: 'SIDE STICK1', value: 8 },
+          { name: 'SIDE STICK2', value: 9 },
+          { name: 'SWING1', value: 10 },
+          { name: 'SWING2', value: 11 },
         ],
       },
       {
@@ -350,12 +350,12 @@ const rhythmMenuData = [
         pattern: [
           { name: 'ROCKNROLL', value: 0 },
           { name: 'TRAIN1', value: 1 },
-          { name: 'COUNTRY1', value: 2 },
-          { name: 'COUNTRY2', value: 3 },
-          { name: 'COUNTRY3', value: 4 },
-          { name: 'FOXTROT', value: 5 },
-          { name: 'TRAD1', value: 6 },
-          { name: 'TRAD2', value: 7 },
+          { name: 'COUNTRY1', value: 3 }, // 2 Skipped on hardware
+          { name: 'COUNTRY2', value: 4 },
+          { name: 'COUNTRY3', value: 5 },
+          { name: 'FOXTROT', value: 6 },
+          { name: 'TRAD1', value: 7 },
+          { name: 'TRAD2', value: 8 },
         ],
       },
       {
@@ -383,11 +383,11 @@ const rhythmMenuData = [
         pattern: [
           { name: 'CHACHA', value: 0 },
           { name: 'BENGUINE', value: 1 },
-          { name: 'RHUMBA', value: 2 },
-          { name: 'TANGO1', value: 3 },
-          { name: 'TANGO2', value: 4 },
-          { name: 'JIVE', value: 5 },
-          { name: 'CHARLSTON', value: 6 },
+          { name: 'RHUMBA', value: 3 }, // 2 Skipped on hardware
+          { name: 'TANGO1', value: 4 },
+          { name: 'TANGO2', value: 5 },
+          { name: 'JIVE', value: 6 },
+          { name: 'CHARLSTON', value: 7 },
         ],
       },
       {
@@ -408,19 +408,19 @@ const rhythmMenuData = [
         name: 'GUIDE',
         value: 19,
         pattern: [
-          { name: '4/4', value: 0 },
-          { name: '4/4 TRIPLE', value: 1 },
-          { name: 'BD 8BEAT', value: 2 },
-          { name: 'BD 16BEAT', value: 3 },
-          { name: 'BD SHUFFLE', value: 4 },
-          { name: 'HH 8BEAT', value: 5 },
-          { name: 'HH 16BEAT', value: 6 },
-          { name: 'HH SWING1', value: 7 },
-          { name: 'HH SWING2', value: 8 },
-          { name: '8BEAT1', value: 9 },
-          { name: '8BEAT2', value: 10 },
-          { name: '8BEAT3', value: 11 },
-          { name: '8BEAT4', value: 12 },
+          { name: '4/4', value: 4 }, // 21 Skipped on hardware
+          { name: '4/4 TRIPLE', value: 5 }, // 22 Skipped on hardware
+          { name: 'BD 8BEAT', value: 23 },
+          { name: 'BD 16BEAT', value: 24 },
+          { name: 'BD SHUFFLE', value: 25 },
+          { name: 'HH 8BEAT', value: 26 },
+          { name: 'HH 16BEAT', value: 27 },
+          { name: 'HH SWING1', value: 28 },
+          { name: 'HH SWING2', value: 29 },
+          { name: '8BEAT1', value: 30 },
+          { name: '8BEAT2', value: 31 },
+          { name: '8BEAT3', value: 32 },
+          { name: '8BEAT4', value: 32 },
         ],
       },
       {

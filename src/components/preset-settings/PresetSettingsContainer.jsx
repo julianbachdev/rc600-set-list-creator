@@ -1,6 +1,6 @@
 import { getTimeSignatures, getGenres, getPatterns } from '../../utils/settingTreeHelpers';
+import React, { useState, useEffect, useMemo } from 'react';
 import PatternVariation from './PatternVariation.jsx';
-import React, { useState, useEffect } from 'react';
 import TimeSignature from './TimeSignature.jsx';
 import PatternGenre from './PatternGenre.jsx';
 import FootSwitch from './FootSwitch.jsx';
@@ -14,9 +14,11 @@ function PresetSettingsContainer() {
   const [timeSignature, setTimeSignature] = useState('2/4');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [selectedPattern, setSelectedPattern] = useState('');
-
   const availableGenres = getGenres(timeSignature);
-  const availablePatterns = getPatterns(timeSignature, selectedGenre);
+  const availablePatterns = useMemo(
+    () => (selectedGenre ? getPatterns(timeSignature, selectedGenre) : []),
+    [timeSignature, selectedGenre]
+  );
 
   useEffect(() => {
     if (availableGenres.length > 0) {
