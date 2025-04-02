@@ -15,17 +15,16 @@ export function createSetList(newSetList, setSetLists, setLists) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function deleteSetList(e, setListName, setSetLists) {
-  e.stopPropagation();
+export function deleteSetList(setListName, setSetLists, setSetListsFinal) {
   if (!confirm('Are you sure you want to delete this set list?')) return;
   setSetLists(prev => prev.filter(setList => setList.setListName !== setListName));
+  setSetListsFinal(prev => prev.filter(item => item !== setListName));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function addSetListFinal(e, setListName, setListsFinal, setSetListsFinal) {
-  e.stopPropagation();
-  if (setListsFinal.some(s => s.setListName === setListName)) {
+export function addSetListFinal(setListName, setListsFinal, setSetListsFinal) {
+  if (setListsFinal.includes(setListName)) {
     alert('You have already added this playlist');
     return;
   }
@@ -34,8 +33,7 @@ export function addSetListFinal(e, setListName, setListsFinal, setSetListsFinal)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function removeSetListFinal(e, setListName, setSetListsFinal) {
-  e.stopPropagation();
+export function removeSetListFinal(setListName, setSetListsFinal) {
   setSetListsFinal(prev => prev.filter(item => item !== setListName));
 }
 

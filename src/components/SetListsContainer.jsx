@@ -13,14 +13,6 @@ function SetListsContainer() {
   const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
   const { setListsFinal, setSetListsFinal } = useSetListsFinalContext();
 
-  function handleToggleSelectedSetList(setListName) {
-    toggleSelectedSetList(setListName, selectedSetList, setSelectedSetList);
-  }
-
-  function handleAddSetListsFinal(e, setListName) {
-    addSetListFinal(e, setListName, setListsFinal, setSetListsFinal);
-  }
-
   return (
     <Reorder.Group
       axis="y"
@@ -41,7 +33,10 @@ function SetListsContainer() {
             whileDrag={{ scale: 1.1 }}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
-            onClick={() => !isDragging && handleToggleSelectedSetList(item.setListName)}
+            onClick={() =>
+              !isDragging &&
+              toggleSelectedSetList(item.setListName, selectedSetList, setSelectedSetList)
+            }
           >
             {item.setListName}
             <div>
@@ -49,7 +44,7 @@ function SetListsContainer() {
                 className="btn-green"
                 onClick={e => {
                   e.stopPropagation();
-                  handleAddSetListsFinal(e, item.setListName);
+                  addSetListFinal(item.setListName, setListsFinal, setSetListsFinal);
                 }}
               >
                 &#10004;
@@ -58,7 +53,7 @@ function SetListsContainer() {
                 className="btn-red"
                 onClick={e => {
                   e.stopPropagation();
-                  deleteSetList(e, item.setListName, setSetLists);
+                  deleteSetList(item.setListName, setSetLists, setSetListsFinal);
                 }}
               >
                 &#10006;

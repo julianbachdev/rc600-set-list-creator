@@ -1,4 +1,4 @@
-import { getVariations } from '../../utils/settingTreeHelpers';
+import { getVariations } from '../../utils/settingsHelpers';
 import React from 'react';
 
 const variations = getVariations();

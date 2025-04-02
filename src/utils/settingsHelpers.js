@@ -45,3 +45,47 @@ export function getKits() {
     value: kit.value,
   }));
 }
+
+export function getSampleRatePerMeasure(bpm, timeSignature) {
+  let secondsPerMeasure;
+  const sampleRate = 441000;
+  const secondsPerBeat = 60 / bpm;
+
+  if (timeSignature === '2/4') {
+    secondsPerMeasure = secondsPerBeat * 2;
+  }
+  if (timeSignature === '3/4') {
+    secondsPerMeasure = secondsPerBeat * 3;
+  }
+  if (timeSignature === '4/4') {
+    secondsPerMeasure = secondsPerBeat * 4;
+  }
+  if (timeSignature === '5/4') {
+    secondsPerMeasure = secondsPerBeat * 5;
+  }
+  if (timeSignature === '6/4') {
+    secondsPerMeasure = secondsPerBeat * 6;
+  }
+  if (timeSignature === '7/4') {
+    secondsPerMeasure = secondsPerBeat * 7;
+  }
+  if (timeSignature === '5/8') {
+    secondsPerMeasure = (secondsPerBeat * 5) / 2;
+  }
+  if (timeSignature === '6/8') {
+    secondsPerMeasure = secondsPerBeat * 3;
+  }
+  if (timeSignature === '7/8') {
+    secondsPerMeasure = (secondsPerBeat * 7) / 2;
+  }
+  if (timeSignature === '8/8') {
+    secondsPerMeasure = secondsPerBeat * 4;
+  }
+  if (timeSignature === '9/8') {
+    secondsPerMeasure = (secondsPerBeat * 9) / 2;
+  }
+
+  const samplesPerMeasure = secondsPerMeasure * sampleRate;
+  const result = Math.floor(samplesPerMeasure / 10);
+  return result;
+}

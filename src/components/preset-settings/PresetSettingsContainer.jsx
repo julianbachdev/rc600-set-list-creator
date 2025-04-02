@@ -1,4 +1,4 @@
-import { getTimeSignatures, getGenres, getPatterns } from '../../utils/settingTreeHelpers';
+import { getTimeSignatures, getGenres, getPatterns } from '../../utils/settingsHelpers';
 import React, { useState, useEffect, useMemo } from 'react';
 import PatternVariation from './PatternVariation.jsx';
 import TimeSignature from './TimeSignature.jsx';

@@ -1,4 +1,4 @@
-import { getKits } from '../../utils/settingTreeHelpers';
+import { getKits } from '../../utils/settingsHelpers';
 import React from 'react';
 
 const kits = getKits();

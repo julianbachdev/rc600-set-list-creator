@@ -1,4 +1,3 @@
-import { extractTxtFileContent, extractTxtFileName } from '../utils/utilityHelpers.js';
 import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext.js';
@@ -24,9 +23,6 @@ function SettingsHeader() {
     window.electron.ipcRenderer
       .invoke('refresh-files')
       .then(files => {
-        const extractedTxtFiles = extractTxtFileName(files);
-        const extractedTxtFilesContent = extractTxtFileContent(files);
-        // setRepertoire(extractedTxtFiles);
         setRepertoire(files);
       })
       .catch(error => console.error('Error refreshing files:', error));
@@ -36,9 +32,6 @@ function SettingsHeader() {
     window.electron.ipcRenderer
       .invoke('open-folder')
       .then(files => {
-        const extractedTxtFiles = extractTxtFileName(files);
-        const extractedTxtFilesContent = extractTxtFileContent(files);
-        // setRepertoire(extractedTxtFiles);
         setRepertoire(files);
       })
       .catch(error => console.error('Error opening folder:', error));

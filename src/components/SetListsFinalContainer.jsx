@@ -21,8 +21,8 @@ function SetListsFinalContainer() {
     toggleSelectedSetList(setListName, selectedSetList, setSelectedSetList);
   }
 
-  function handleRemoveSetListFinal(e, setListName) {
-    removeSetListFinal(e, setListName, setSetListsFinal);
+  function handleRemoveSetListFinal(setListName) {
+    removeSetListFinal(setListName, setSetListsFinal);
   }
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function SetListsFinalContainer() {
               className="btn-red"
               onClick={e => {
                 e.stopPropagation();
-                handleRemoveSetListFinal(e, item);
+                handleRemoveSetListFinal(item);
               }}
             >
               &#10006;
