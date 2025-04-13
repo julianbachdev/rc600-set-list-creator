@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-function Bpm() {
-  const [bpm, setBpm] = useState(120);
-
+function Bpm({ bpmValue, handleChange }) {
   return (
-    <select className="header-input" value={bpm} onChange={e => setBpm(Number(e.target.value))}>
+    <select
+      className="header-input"
+      value={bpmValue}
+      onChange={e => handleChange(Number(e.target.value))}
+    >
       {Array.from({ length: 261 }, (_, i) => 40 + i).map(bpmValue => (
         <option key={bpmValue} value={bpmValue}>
           {bpmValue} BPM

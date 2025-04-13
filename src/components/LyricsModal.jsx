@@ -6,7 +6,6 @@ import { formatSongName } from '../utils/utilityHelpers';
 import React, { useEffect, useState } from 'react';
 
 function Modal() {
-  // console.log('MODAL');
   const { songFile, repertoireOrSetList, handleToggleOpenLyricsModal } =
     useToggleOpenLyricsModalContext();
   const [showDetails, setShowDetails] = useState(false);
@@ -45,6 +44,21 @@ function Modal() {
     };
   }, [handleToggleOpenLyricsModal]);
 
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'ArrowLeft') {
+        handleSongNavigation(-1);
+      } else if (event.key === 'ArrowRight') {
+        handleSongNavigation(1);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [songFile, repertoireOrSetList, repertoire, setLists, selectedSetList]);
+
   return (
     <div className="modal-container">
       <div className="modal-header">
@@ -68,7 +82,7 @@ function Modal() {
         >
           &#x25C0;
         </button>
-        <div className="modal-lyrics">{songFile.content}</div>
+        <div className="text-sm">{songFile.content}</div>
         <button
           onClick={() => handleSongNavigation(1)}
           className="modal-nav-button btn-blue right-0"

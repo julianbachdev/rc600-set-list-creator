@@ -1,13 +1,11 @@
+import { hardSaveSetListsData, openFolder, refreshFiles } from '../utils/dataHelpers.js';
 import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext.js';
-import { hardSaveSetListsData } from '../utils/dataHelpers.js';
 import React, { useEffect } from 'react';
 
 function SettingsHeader() {
-  // console.log('SETTINGS HEADER');
-
-  const { setRepertoire } = useRepertoireContext();
+  const { repertoire, handleSetRepertoire } = useRepertoireContext();
   const { setLists } = useSetListsContext();
   const { setListsFinal } = useSetListsFinalContext();
 
@@ -19,26 +17,8 @@ function SettingsHeader() {
     hardSaveSetListsData(data);
   }
 
-  function handleRefreshFiles() {
-    window.electron.ipcRenderer
-      .invoke('refresh-files')
-      .then(files => {
-        setRepertoire(files);
-      })
-      .catch(error => console.error('Error refreshing files:', error));
-  }
-
-  function handleOpenFolder() {
-    window.electron.ipcRenderer
-      .invoke('open-folder')
-      .then(files => {
-        setRepertoire(files);
-      })
-      .catch(error => console.error('Error opening folder:', error));
-  }
-
   useEffect(() => {
-    handleRefreshFiles();
+    refreshFiles(handleSetRepertoire);
   }, []);
 
   return (
@@ -49,13 +29,12 @@ function SettingsHeader() {
           SAVE
         </button>
       </div>
-
       <div className="header-container-label pb-1">
         <div>RC600 SONGS</div>
-        <button onClick={handleRefreshFiles} className="btn-blue">
+        <button onClick={() => refreshFiles(handleSetRepertoire)} className="btn-blue">
           Refresh
         </button>
-        <button onClick={handleOpenFolder} className="btn-blue">
+        <button onClick={() => openFolder(handleSetRepertoire)} className="btn-blue">
           Load
         </button>
       </div>

@@ -6,7 +6,12 @@ export function SelectedSongProvider({ children }) {
   const [selectedSong, setSelectedSong] = useState('');
 
   return (
-    <SelectedSongContext.Provider value={{ selectedSong, setSelectedSong }}>
+    <SelectedSongContext.Provider
+      value={{
+        selectedSong,
+        setSelectedSong,
+      }}
+    >
       {children}
     </SelectedSongContext.Provider>
   );

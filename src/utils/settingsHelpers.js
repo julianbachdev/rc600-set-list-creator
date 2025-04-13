@@ -1,4 +1,4 @@
-import rhythmMenuData from '../data/rhythmData';
+import { rhythmMenuData } from '../data/rhythmData';
 
 export function getTimeSignatures() {
   const timeSignatureObjects = rhythmMenuData.filter(item => item.timeSignature);
@@ -7,6 +7,8 @@ export function getTimeSignatures() {
     value: item.value,
   }));
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function getGenres(timeSignature) {
   const timeSignatureData = rhythmMenuData.find(item => item.timeSignature === timeSignature);
@@ -17,16 +19,22 @@ export function getGenres(timeSignature) {
   }));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 export function getPatterns(timeSignature, selectedGenre) {
   const timeSignatureData = rhythmMenuData.find(item => item.timeSignature === timeSignature);
   if (!timeSignatureData) return [];
-  const genreData = timeSignatureData.genre.find(genre => genre.name === selectedGenre);
+  const genreData =
+    timeSignatureData.genre.find(genre => genre.name === selectedGenre) ||
+    timeSignatureData.genre[0];
   if (!genreData) return [];
   return genreData.pattern.map(pattern => ({
     name: pattern.name,
     value: pattern.value,
   }));
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function getVariations() {
   const variationObject = rhythmMenuData.find(item => item.variation);
@@ -37,6 +45,8 @@ export function getVariations() {
   }));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 export function getKits() {
   const kitObject = rhythmMenuData.find(item => item.kit);
   if (!kitObject) return [];
@@ -45,6 +55,8 @@ export function getKits() {
     value: kit.value,
   }));
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function getSampleRatePerMeasure(bpm, timeSignature) {
   let secondsPerMeasure;
@@ -88,4 +100,23 @@ export function getSampleRatePerMeasure(bpm, timeSignature) {
   const samplesPerMeasure = secondsPerMeasure * sampleRate;
   const result = Math.floor(samplesPerMeasure / 10);
   return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export function getSongMeta(songName, repertoire) {
+  const songObj = repertoire.find(item => item.name === songName);
+  if (!songObj || typeof songObj.content !== 'string') return null;
+  const lines = songObj.content.split('\n');
+  const metaLines = lines.filter(line => line.trim().startsWith('#'));
+  const metaObj = metaLines.reduce((acc, line) => {
+    const cleanedLine = line.slice(1).trim();
+    const [key, ...rest] = cleanedLine.split(':');
+    if (key && rest.length > 0) {
+      acc[key.trim()] = rest.join(':').trim();
+    }
+    return acc;
+  }, {});
+  metaObj.name = songName;
+  return metaObj;
 }

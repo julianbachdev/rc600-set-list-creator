@@ -9,21 +9,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListsFinalContainer() {
-  // console.log('SETLIST FINAL CONTAINER');
-
   const [isDragging, setIsDragging] = useState(false);
   const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
   const { setListsFinal, setSetListsFinal } = useSetListsFinalContext();
   const listRef = useRef(null);
   const prevListLength = useRef(setListsFinal.length);
-
-  function handleToggleSelectedSetList(setListName) {
-    toggleSelectedSetList(setListName, selectedSetList, setSelectedSetList);
-  }
-
-  function handleRemoveSetListFinal(setListName) {
-    removeSetListFinal(setListName, setSetListsFinal);
-  }
 
   useEffect(() => {
     handleAutoScroll(listRef, setListsFinal, prevListLength);
@@ -50,14 +40,16 @@ function SetListsFinalContainer() {
             whileDrag={{ scale: 1.1 }}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
-            onClick={() => !isDragging && handleToggleSelectedSetList(item)}
+            onClick={() =>
+              !isDragging && toggleSelectedSetList(item, selectedSetList, setSelectedSetList)
+            }
           >
             {item}
             <button
               className="btn-red"
               onClick={e => {
                 e.stopPropagation();
-                handleRemoveSetListFinal(item);
+                removeSetListFinal(setListName, setSetListsFinal);
               }}
             >
               &#10006;

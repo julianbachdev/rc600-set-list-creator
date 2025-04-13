@@ -58,7 +58,7 @@ export function reorderSetListSongs(selectedSetList, newOrder, setSetLists) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function removeSongFromSetList(selectedSetList, songToRemove, setSetLists) {
+export function removeSongFromSetList(songToRemove, selectedSetList, setSetLists) {
   setSetLists(prev =>
     prev.map(set =>
       set.setListName === selectedSetList
@@ -68,5 +68,23 @@ export function removeSongFromSetList(selectedSetList, songToRemove, setSetLists
           }
         : set
     )
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export function toggleAddRemoveSongsFromSetList(song, selectedSetList, setSetLists) {
+  if (!selectedSetList) return;
+  setSetLists(prev =>
+    prev.map(set => {
+      if (set.setListName !== selectedSetList) return set;
+      const isSongInList = set.setListSongs.includes(song);
+      return {
+        ...set,
+        setListSongs: isSongInList
+          ? set.setListSongs.filter(s => s !== song)
+          : [...set.setListSongs, song],
+      };
+    })
   );
 }

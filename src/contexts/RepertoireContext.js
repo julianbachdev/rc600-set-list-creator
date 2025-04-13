@@ -1,3 +1,4 @@
+import { extractMetadataFromContent } from '../utils/utilityHelpers';
 import React, { createContext, useContext, useState } from 'react';
 
 const RepertoireContext = createContext();
@@ -5,17 +6,24 @@ const RepertoireContext = createContext();
 export function RepertoireProvider({ children }) {
   const [repertoire, setRepertoire] = useState([]);
 
+  function handleSetRepertoire(data) {
+    const newRepertoire = data.map(song => {
+      const settingsData = extractMetadataFromContent(song);
+      return {
+        ...song,
+        settings: settingsData,
+      };
+    });
+    setRepertoire(newRepertoire);
+  }
+
   return (
-    <RepertoireContext.Provider value={{ repertoire, setRepertoire }}>
+    <RepertoireContext.Provider value={{ repertoire, handleSetRepertoire }}>
       {children}
     </RepertoireContext.Provider>
   );
 }
 
 export function useRepertoireContext() {
-  const context = useContext(RepertoireContext);
-  if (!context) {
-    throw new Error('useRepertoireContext must be used within a RepertoireProvider');
-  }
-  return context;
+  return useContext(RepertoireContext);
 }

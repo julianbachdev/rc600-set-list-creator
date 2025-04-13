@@ -7,5 +7,8 @@ contextBridge.exposeInMainWorld('electron', {
     loadSetListsDataFromFile: () => ipcRenderer.invoke('load-setlists-data-from-file'),
     setDataSaved: () => ipcRenderer.send('data-is-saved'),
     createXMLFile: () => ipcRenderer.invoke('create-xml-file'),
+    createTextFiles: repertoire => ipcRenderer.invoke('create-text-files', repertoire),
+    overwriteTextFile: (song, options = { overwrite: false }) =>
+      ipcRenderer.invoke('overwrite-text-file', song, options),
   },
 });

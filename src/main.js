@@ -1,3 +1,4 @@
+const sanitize = require('sanitize-filename');
 import ElectronStore from 'electron-store';
 import { menuTemplate } from './menu';
 
@@ -176,6 +177,125 @@ ipcMain.handle('create-xml-file', async () => {
   } catch (error) {
     console.error('Error creating XML file:', error);
     return { success: false, message: 'Failed to create XML file.' };
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('create-text-files', async (event, repertoire) => {
+  try {
+    if (!mainWindow) return { success: false, message: 'Window not available' };
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+      title: 'Select Folder to Save Text Files',
+    });
+    if (result.canceled || result.filePaths.length === 0) {
+      return { success: false, message: 'No folder selected' };
+    }
+
+    const selectedFolder = result.filePaths[0];
+    const createdFiles = [];
+
+    for (const item of repertoire) {
+      const cleanName = sanitize(item.name.trim().replace(/\.txt$/i, ''));
+      if (!cleanName) {
+        return {
+          success: false,
+          message: 'Invalid or empty item name after sanitizing',
+        };
+      }
+
+      const filePath = path.join(selectedFolder, `${cleanName}.txt`);
+
+      try {
+        await fs.promises.writeFile(filePath, item.content, 'utf-8');
+        createdFiles.push(cleanName);
+      } catch (writeError) {
+        return {
+          success: false,
+          message: `Failed to write file ${cleanName}: ${writeError.message}`,
+        };
+      }
+    }
+
+    return {
+      success: true,
+      message: `Successfully created ${createdFiles.length} text files`,
+      files: createdFiles,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Failed to create text files: ${error.message}`,
+    };
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('overwrite-text-file', async (event, song, overwrite = false) => {
+  try {
+    if (!song || !song.name || !song.content || !song.path || !song.settings) {
+      return { success: false, message: 'Invalid song object' };
+    }
+
+    let filteredContent = song.content
+      .split('\n')
+      .filter(line => !line.trim().startsWith('#'))
+      .join('\n')
+      .trimEnd();
+    const settingsLines = Object.entries(song.settings).map(([key, value]) => `# ${key}: ${value}`);
+    const finalContent = `${filteredContent}\n\n${settingsLines.join('\n')}`;
+    let filePath;
+    const cleanName = sanitize(song.name.trim().replace(/\.txt$/i, ''));
+
+    if (!cleanName) {
+      return { success: false, message: 'Invalid or empty song name after sanitizing' };
+    }
+
+    let candidateName = `${cleanName}.txt`;
+
+    if (overwrite) {
+      const originalPath = song.path;
+      const targetFolder = path.dirname(originalPath);
+      filePath = path.join(targetFolder, candidateName);
+      if (filePath !== originalPath && fs.existsSync(originalPath)) {
+        await fs.promises.unlink(originalPath);
+      }
+    } else {
+      if (!mainWindow) return { success: false, message: 'Window not available' };
+      const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory'],
+        title: 'Select Folder to Save the Text File',
+      });
+
+      if (result.canceled || result.filePaths.length === 0) {
+        return { success: false, message: 'No folder selected' };
+      }
+
+      const selectedFolder = result.filePaths[0];
+      filePath = path.join(selectedFolder, candidateName);
+
+      let counter = 1;
+      while (fs.existsSync(filePath)) {
+        candidateName = `${cleanName}(${counter}).txt`;
+        filePath = path.join(selectedFolder, candidateName);
+        counter++;
+      }
+    }
+
+    await fs.promises.writeFile(filePath, finalContent, 'utf-8');
+
+    return {
+      success: true,
+      message: `File saved as ${path.basename(filePath)}`,
+      filePath,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Failed to save song: ${error.message}`,
+    };
   }
 });
 

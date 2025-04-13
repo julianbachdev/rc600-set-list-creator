@@ -59,7 +59,7 @@
 }
 
 .btn-green {
-  @apply mx-1 rounded-md bg-green-color px-1 text-sm text-text-color hover:bg-green-hover active:bg-green-active;
+  @apply mx-1 rounded-md bg-green-color px-1 text-sm text-gray-700 hover:bg-green-hover active:bg-green-active;
 }
 
 .btn-blue {

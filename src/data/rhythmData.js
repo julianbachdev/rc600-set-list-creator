@@ -1,4 +1,19 @@
-const rhythmMenuData = [
+export const rhythmSettingsDefault = {
+  bpm: '120',
+  genre: 'USER',
+  key: '',
+  keyTrue: '',
+  kit: 'BRUSH',
+  loop: '',
+  name: '',
+  pattern: '__4A_',
+  rhythm: 'OFF',
+  timeSignature: '2/4',
+  tuning: 0,
+  variation: 'A',
+};
+
+export const rhythmMenuData = [
   {
     value: -1,
     variation: [
@@ -8,21 +23,21 @@ const rhythmMenuData = [
       { name: 'D', value: 3 },
     ],
     kit: [
-      { name: 'Studio', value: 0 },
-      { name: 'Live', value: 1 },
-      { name: 'Light', value: 2 },
-      { name: 'Heavy', value: 3 },
-      { name: 'Rock', value: 4 },
-      { name: 'Metal', value: 5 },
-      { name: 'Jazz', value: 6 },
-      { name: 'Brush', value: 7 },
-      { name: 'Cajon', value: 8 },
-      { name: 'Drum & Bass', value: 9 },
+      { name: 'STUDIO', value: 0 },
+      { name: 'LIVE', value: 1 },
+      { name: 'LIGHT', value: 2 },
+      { name: 'HEAVY', value: 3 },
+      { name: 'ROCK', value: 4 },
+      { name: 'METAL', value: 5 },
+      { name: 'JAZZ', value: 6 },
+      { name: 'BRUSH', value: 7 },
+      { name: 'CAJON', value: 8 },
+      { name: 'DRUM & BASS', value: 9 },
       { name: 'R & B', value: 10 },
-      { name: 'Dance', value: 11 },
-      { name: 'Techno', value: 12 },
-      { name: 'Dance Beats', value: 13 },
-      { name: 'Hip Hop', value: 14 },
+      { name: 'DANCE', value: 11 },
+      { name: 'TECHNO', value: 12 },
+      { name: 'DANCE BEATS', value: 13 },
+      { name: 'HIP HOP', value: 14 },
       { name: '808 + 909', value: 15 },
     ],
   },
@@ -553,5 +568,3 @@ const rhythmMenuData = [
     ],
   },
 ];
-
-export default rhythmMenuData;

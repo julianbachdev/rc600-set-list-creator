@@ -2,13 +2,8 @@ import { useSearchSongsContext } from '../contexts/SearchSongsContext';
 import React, { useState, useEffect } from 'react';
 
 function SearchInput() {
-  // console.log('SEARCH INPUT');
   const { setSearchSongs } = useSearchSongsContext();
   const [inputValue, setInputValue] = useState('');
-
-  function handleClearInput() {
-    setInputValue('');
-  }
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -26,7 +21,7 @@ function SearchInput() {
         className="header-input"
         placeholder="Search song"
       />
-      <button onClick={handleClearInput} className="btn-blue">
+      <button onClick={() => setInputValue('')} className="btn-blue">
         &#10006;
       </button>
     </div>

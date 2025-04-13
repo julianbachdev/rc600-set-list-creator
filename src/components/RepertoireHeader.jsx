@@ -3,8 +3,6 @@ import SearchInput from './SearchInput.jsx';
 import React from 'react';
 
 function RepertoireHeader() {
-  // console.log('REPERTOIRE HEADER');
-
   const { showRepertoireDetails, handleSetShowRepertoireDetails } =
     useShowRepertoireDetailsContext();
 

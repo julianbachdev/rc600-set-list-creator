@@ -6,43 +6,44 @@ import {
 import { useShowSetListSongsDetailsContext } from '../contexts/ShowSetListSongsDetailsContext.js';
 import { useToggleOpenLyricsModalContext } from '../contexts/ToggleOpenLyricsModalContext.js';
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
+import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext';
 import { formatSongName } from '../utils/utilityHelpers.js';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListSongsContainer() {
-  // console.log('SETLIST SONGS CONTAINER');
-
   const { setLists, setSetLists } = useSetListsContext();
   const { selectedSetList } = useSelectedSetListContext();
   const { showSetListSongsDetails } = useShowSetListSongsDetailsContext();
   const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
+  const { selectedSong, setSelectedSong } = useSelectedSongContext();
 
+  const [isDragging, setIsDragging] = useState(false);
   const listRef = useRef(null);
   const prevListLength = useRef(0);
   const selectedSetListSongs =
     setLists.find(s => s.setListName === selectedSetList)?.setListSongs || [];
-
-  useEffect(() => {
-    if (selectedSetListSongs.length) {
-      handleAutoScroll(listRef, selectedSetListSongs, prevListLength);
-    }
-  }, [selectedSetListSongs]);
-
-  function handleFormatSongName(song) {
-    return formatSongName(song, showSetListSongsDetails);
-  }
-
-  function handleRemoveSongFromSetList(songToRemove) {
-    removeSongFromSetList(selectedSetList, songToRemove, setSetLists);
-  }
 
   function handleReorderSetListSongs(newOrder) {
     if (selectedSetList) {
       reorderSetListSongs(selectedSetList, newOrder, setSetLists);
     }
   }
+
+  function handleSelectedSong(songName) {
+    if (selectedSong !== songName) {
+      setSelectedSong(songName);
+    } else {
+      setSelectedSong('');
+    }
+  }
+
+  useEffect(() => {
+    if (selectedSetListSongs.length) {
+      handleAutoScroll(listRef, selectedSetListSongs, prevListLength);
+    }
+  }, [selectedSetListSongs]);
 
   return (
     <Reorder.Group
@@ -55,17 +56,34 @@ function SetListSongsContainer() {
       }}
     >
       {selectedSetListSongs.map((item, index) => {
-        const itemColor = index % 2 === 0 ? 'item-color-even' : 'item-color-odd';
+        const itemClass =
+          selectedSong === item
+            ? 'list-item bg-blue-color'
+            : `list-item ${index % 2 === 0 ? 'item-color-even' : 'item-color-odd'}`;
 
         return (
           <Reorder.Item
             key={item}
             value={item}
-            className={`list-item ${itemColor}`}
+            className={itemClass}
             whileDrag={{ scale: 1.1 }}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
+            onClick={() => {
+              !isDragging && handleSelectedSong(item);
+            }}
           >
-            {handleFormatSongName(item)}
+            {formatSongName(item, showSetListSongsDetails)}
             <div>
+              <button
+                className="btn-red"
+                onClick={e => {
+                  e.stopPropagation();
+                  removeSongFromSetList(item, selectedSetList, setSetLists);
+                }}
+              >
+                &#10006;
+              </button>
               <button
                 className="btn-blue"
                 onClick={e => {
@@ -74,16 +92,7 @@ function SetListSongsContainer() {
                   setRepertoireOrSetList('setList');
                 }}
               >
-                Open
-              </button>
-              <button
-                className="btn-red"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleRemoveSongFromSetList(item);
-                }}
-              >
-                &#10006;
+                {'📄'}
               </button>
             </div>
           </Reorder.Item>
