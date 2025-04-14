@@ -21,8 +21,8 @@ function SearchInput() {
         className="header-input"
         placeholder="Search song"
       />
-      <button onClick={() => setInputValue('')} className="btn-blue">
-        &#10006;
+      <button onClick={() => setInputValue('')} className="btn-blue px-3">
+        Cancel
       </button>
     </div>
   );

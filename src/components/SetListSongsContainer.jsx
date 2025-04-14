@@ -7,6 +7,7 @@ import { useShowSetListSongsDetailsContext } from '../contexts/ShowSetListSongsD
 import { useToggleOpenLyricsModalContext } from '../contexts/ToggleOpenLyricsModalContext.js';
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
+import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext';
 import { formatSongName } from '../utils/utilityHelpers.js';
 import React, { useEffect, useRef, useState } from 'react';
@@ -18,7 +19,6 @@ function SetListSongsContainer() {
   const { showSetListSongsDetails } = useShowSetListSongsDetailsContext();
   const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
   const { selectedSong, setSelectedSong } = useSelectedSongContext();
-
   const [isDragging, setIsDragging] = useState(false);
   const listRef = useRef(null);
   const prevListLength = useRef(0);
@@ -76,7 +76,7 @@ function SetListSongsContainer() {
             {formatSongName(item, showSetListSongsDetails)}
             <div>
               <button
-                className="btn-red"
+                className="btn-red px-1 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
                   removeSongFromSetList(item, selectedSetList, setSetLists);
@@ -85,7 +85,7 @@ function SetListSongsContainer() {
                 &#10006;
               </button>
               <button
-                className="btn-blue"
+                className="btn-blue ml-2 px-1.5 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
                   handleToggleOpenLyricsModal(item, selectedSetList, true);

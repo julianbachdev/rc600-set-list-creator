@@ -9,7 +9,7 @@ function SetListSongsHeader() {
     <div className="header-container">
       <div className="header-container-label">
         <div>SET LISTS SONGS</div>
-        <button className="btn-blue" onClick={() => setShowSetListSongsDetails(prev => !prev)}>
+        <button className="btn-blue px-3" onClick={() => setShowSetListSongsDetails(prev => !prev)}>
           {showSetListSongsDetails ? 'Hide Details' : 'Show Details'}
         </button>
       </div>

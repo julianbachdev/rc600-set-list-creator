@@ -30,7 +30,7 @@ function SetListsHeader() {
           className="header-input"
           placeholder="Enter name"
         />
-        <button type="submit" disabled={!newSetList} className="btn-blue">
+        <button type="submit" disabled={!newSetList} className="btn-blue px-3">
           Add
         </button>
       </form>

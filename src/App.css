@@ -7,7 +7,7 @@
 }
 
 .container {
-  @apply flex h-full min-w-[200px] max-w-[350px] flex-col rounded-lg border-2 border-gray-700 p-3;
+  @apply flex h-full min-w-[200px] max-w-[400px] flex-col rounded-lg border-2 border-gray-700 p-3;
 }
 
 .list-container {
@@ -47,23 +47,23 @@
 }
 
 .header-input {
-  @apply mr-2 w-full rounded-md px-3 py-1 text-base text-black;
+  @apply w-full rounded-md px-3 py-1 text-base text-black;
 }
 
 .header-input-btn {
-  @apply rounded-md bg-blue-color px-2 text-base hover:bg-blue-hover active:bg-blue-active;
+  @apply rounded-md bg-blue-color text-base hover:bg-blue-hover active:bg-blue-active;
 }
 
 .btn-red {
-  @apply mx-1 rounded-md bg-red-color px-1 text-sm text-text-color hover:bg-red-hover active:bg-red-active;
+  @apply rounded-md bg-red-color text-sm text-text-color hover:bg-red-hover active:bg-red-active;
 }
 
 .btn-green {
-  @apply mx-1 rounded-md bg-green-color px-1 text-sm text-gray-700 hover:bg-green-hover active:bg-green-active;
+  @apply rounded-md bg-green-color text-sm text-gray-700 hover:bg-green-hover active:bg-green-active;
 }
 
 .btn-blue {
-  @apply rounded-md bg-blue-color px-2 text-sm text-text-color hover:bg-blue-hover active:bg-blue-active;
+  @apply rounded-md bg-blue-color text-sm text-text-color hover:bg-blue-hover active:bg-blue-active;
 }
 
 .modal-container {

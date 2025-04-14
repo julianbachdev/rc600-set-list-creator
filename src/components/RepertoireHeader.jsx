@@ -12,7 +12,7 @@ function RepertoireHeader() {
     <div className="header-container">
       <div className="header-container-label">
         <h2>REPERTOIRE</h2>
-        <button className="btn-blue" onClick={handleSetShowRepertoireDetails}>
+        <button className="btn-blue px-3" onClick={handleSetShowRepertoireDetails}>
           {buttonLabel}
         </button>
       </div>

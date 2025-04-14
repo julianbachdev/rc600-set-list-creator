@@ -39,7 +39,7 @@ function SetListsContainer() {
             {item.setListName}
             <div>
               <button
-                className="btn-green"
+                className="btn-green px-1 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
                   addSetListFinal(item.setListName, setListsFinal, setSetListsFinal);
@@ -48,7 +48,7 @@ function SetListsContainer() {
                 &#10004;
               </button>
               <button
-                className="btn-red"
+                className="btn-red ml-2 px-1 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
                   deleteSetList(item.setListName, setSetLists, setSetListsFinal);

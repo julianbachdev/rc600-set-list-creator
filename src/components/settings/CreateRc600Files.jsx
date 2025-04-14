@@ -16,7 +16,7 @@ function CreateRc600Files() {
   }
 
   return (
-    <button className="btn-blue w-full py-2" onClick={createXMLFile}>
+    <button className="btn-red w-full py-2" onClick={createXMLFile}>
       CREATE RC600 FILES
     </button>
   );

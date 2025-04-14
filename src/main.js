@@ -1,5 +1,5 @@
-const sanitize = require('sanitize-filename');
 import ElectronStore from 'electron-store';
+import sanitize from 'sanitize-filename';
 import { menuTemplate } from './menu';
 
 const { app, BrowserWindow, shell, Menu, dialog, ipcMain } = require('electron');

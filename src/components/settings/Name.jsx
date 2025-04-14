@@ -5,7 +5,6 @@ function Name({ songName, handleChange, placeholder }) {
     <input
       placeholder={placeholder}
       className="header-input"
-      maxLength={12}
       value={songName}
       onChange={e => handleChange(e.target.value)}
     />

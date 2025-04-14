@@ -45,7 +45,7 @@ function RepertoireContainer() {
               ? 'list-item is-selected'
               : `list-item ${index % 2 === 0 ? 'item-color-even' : 'item-color-odd'}`;
 
-        const btnClass = isSelected ? 'btn-red' : `btn-green`;
+        const btnClass = isSelected ? 'btn-red px-1 py-0.5' : `btn-green px-1 py-0.5`;
 
         return (
           <li
@@ -67,7 +67,7 @@ function RepertoireContainer() {
                 {isSelected ? '✖' : '✔'}
               </button>
               <button
-                className="btn-blue"
+                className="btn-blue ml-2 px-1.5 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
                   handleToggleOpenLyricsModal(item.name, 'repertoire', true);
