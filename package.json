@@ -10,7 +10,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
+    "push": "read -p 'Commit message: ' msg && git add . && git commit -m \"$msg\" && git push origin main"
   },
   "keywords": [],
   "author": {

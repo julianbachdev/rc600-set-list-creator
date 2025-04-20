@@ -1,3 +1,6 @@
+import { getSampleRatePerMeasure } from './settingsHelpers';
+import { rhythmMenuData } from '../data/rhythmData';
+
 export function toggleSelectedSetList(setListName, selectedSetList, setSelectedSetList) {
   setSelectedSetList(setListName === selectedSetList ? '' : setListName);
 }
@@ -87,4 +90,123 @@ export function toggleAddRemoveSongsFromSetList(song, selectedSetList, setSetLis
       };
     })
   );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function getSongsFromSetLists(setLists, setListsFinal) {
+  return setListsFinal.flatMap(setName =>
+    setLists.filter(list => list.setListName === setName).flatMap(list => list.setListSongs)
+  );
+}
+
+function getSongDataFromSongList(repertoire, songList) {
+  return songList
+    .map(songName => repertoire.find(song => song.name === songName))
+    .filter(Boolean)
+    .map(song => {
+      return { ...song };
+    });
+}
+
+export function filterSongDataValues(songData, rhythmMenuData) {
+  return songData.map((song, index) => {
+    const { key, tuning, loop, ...settings } = song.settings || {};
+    const newSettings = {};
+    const defaultNameChar = `Memory(${index + 1})`;
+    const paddedDefaultName = defaultNameChar.padEnd(12, ' ');
+    const defaultName = paddedDefaultName.split('').map(char => char.charCodeAt(0));
+    const keyTrueDefault = 0;
+    const bpmDefault = 120;
+    const variationDefault = 0;
+    const kitDefault = 7;
+    const timeSignatureDefault = 0;
+    const genreDefault = 0;
+    const patternDefault = 0;
+    const rhythmOnOffDefault = 0;
+
+    //Name
+    newSettings.name = {
+      value: settings.name || defaultName,
+      rc600Value: (settings.name || defaultName)
+        .padEnd(12, ' ')
+        .split('')
+        .map(char => char.charCodeAt(0)),
+    };
+
+    // Key True
+    newSettings.keyTrue = {
+      value: settings.keyTrue,
+      rc600Value: keyTrueDefault,
+    };
+
+    // Bpm
+    newSettings.bpm = {
+      value: settings.bpm,
+      rc600Value: settings.bpm ? settings.bpm * 10 : bpmDefault,
+    };
+
+    // Rhythm On Off
+    newSettings.rhythmOnOff = {
+      value: settings.rhythmOnOff,
+      rc600Value: settings.rhythmOnOff === 'ON' ? 1 : rhythmOnOffDefault,
+    };
+
+    // Variation
+    const rhythmDataForVariation = rhythmMenuData.find(item => item.variation);
+    newSettings.variation = {
+      value: settings.variation,
+      rc600Value:
+        rhythmDataForVariation?.variation.find(v => v.name === settings.variation)?.value ??
+        variationDefault,
+    };
+
+    // Kit
+    const rhythmDataForKit = rhythmMenuData.find(item => item.kit);
+    newSettings.kit = {
+      value: settings.kit,
+      rc600Value: rhythmDataForKit?.kit.find(k => k.name === settings.kit)?.value ?? kitDefault,
+    };
+
+    // Time Signature
+    const rhythmDataForTimeSignature = rhythmMenuData.find(
+      item => item.timeSignature === settings.timeSignature
+    );
+    newSettings.timeSignature = {
+      value: settings.timeSignature,
+      rc600Value: rhythmDataForTimeSignature?.value ?? timeSignatureDefault,
+    };
+
+    // Genre
+    newSettings.genre = {
+      value: settings.genre,
+      rc600Value:
+        rhythmDataForTimeSignature?.genre.find(g => g.name === settings.genre)?.value ??
+        genreDefault,
+    };
+
+    // Pattern
+    newSettings.pattern = {
+      value: settings.pattern,
+      rc600Value:
+        rhythmDataForTimeSignature?.genre
+          .find(g => g.name === settings.genre)
+          ?.pattern.find(p => p.name === settings.pattern)?.value ?? patternDefault,
+    };
+
+    // Samples Per Measure
+    newSettings.samplesPerMeasure = {
+      value: 'SAMPLES PER MEASURE',
+      rc600Value: getSampleRatePerMeasure(newSettings.bpm.value, newSettings.timeSignature.value),
+    };
+
+    return { ...settings, ...newSettings };
+  });
+}
+
+export function collectDataForRc600(repertoire, setLists, setListsFinal) {
+  const orderedSongNames = getSongsFromSetLists(setLists, setListsFinal);
+  const songsData = getSongDataFromSongList(repertoire, orderedSongNames);
+  const songsDataAndValues = filterSongDataValues(songsData, rhythmMenuData);
+  return songsDataAndValues;
 }

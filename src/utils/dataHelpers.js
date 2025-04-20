@@ -61,11 +61,16 @@ export function createTextFiles(repertoire) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function overWriteTextFile(song, options = { overwrite: false }) {
-  if (!song.name) return;
+export function overWriteTextFile(song, overwrite) {
+  const confirmed = window.confirm(
+    overwrite
+      ? "You're about to overwrite the original file"
+      : "You're about to create a new version of your file"
+  );
+  if (!confirmed || !song.name) return;
 
   window.electron.ipcRenderer
-    .invoke('overwrite-text-file', song, options)
+    .invoke('overwrite-text-file', song, overwrite)
     .then(result => {
       if (result && result.success) {
         console.log(result.message);
@@ -74,4 +79,15 @@ export function overWriteTextFile(song, options = { overwrite: false }) {
       }
     })
     .catch(error => console.error('Error saving song file:', error));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function createXMLFile(finalData) {
+  if (finalData.length === 0) {
+    window.alert('Please add set lists to final');
+    return;
+  }
+  const result = await window.electron.ipcRenderer.createXMLFile();
+  console.log(result.message);
 }

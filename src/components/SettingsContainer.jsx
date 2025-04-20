@@ -8,10 +8,10 @@ import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext.js';
+import React, { useState, useEffect, useCallback } from 'react';
 import CreateRc600Files from './settings/CreateRc600Files.jsx';
 import { rhythmSettingsDefault } from '../data/rhythmData.js';
 import TimeSignature from './settings/TimeSignature.jsx';
-import React, { useState, useEffect } from 'react';
 import Variation from './settings/Variation.jsx';
 import LoopNotes from './settings/LoopNotes.jsx';
 import Pattern from './settings/Pattern.jsx';
@@ -27,7 +27,7 @@ function PresetSettingsContainer() {
   const { setListsFinal } = useSetListsFinalContext();
   const { repertoire, handleSetRepertoire } = useRepertoireContext();
   const { selectedSong, setSelectedSong } = useSelectedSongContext();
-  const [overwrite, setOverwrite] = useState(false);
+  const [overwrite, setOverwrite] = useState(true);
   const [songSettings, setSongSettings] = useState({
     content: '',
     name: '',
@@ -36,7 +36,8 @@ function PresetSettingsContainer() {
 
   useEffect(() => {
     const selectedSongData = repertoire.find(song => song.name === selectedSong) || {};
-    setSongSettings({
+    setSongSettings(prev => ({
+      ...prev,
       content: selectedSongData.content || '',
       name: selectedSongData.name || '',
       path: selectedSongData.path || '',
@@ -55,35 +56,25 @@ function PresetSettingsContainer() {
         tuning: selectedSongData.settings?.tuning || rhythmSettingsDefault.tuning,
         variation: selectedSongData.settings?.variation || rhythmSettingsDefault.variation,
       },
-    });
+    }));
   }, [selectedSong, repertoire]);
 
   useEffect(() => {
     refreshFiles(handleSetRepertoire);
   }, []);
 
-  function handleSaveChanges() {
-    const confirmed = window.confirm(
-      overwrite
-        ? "You're about to overwrite the original file"
-        : "You're about to create a new version of your file"
-    );
-    if (!confirmed) return;
-    if (!selectedSong) return;
+  function handleSaveSettingsChanges() {
     overWriteTextFile(songSettings, overwrite);
     setSelectedSong('');
   }
 
-  function handleFileNameChange(newFileName) {
+  const handleFileNameChange = useCallback(newFileName => {
     setSongSettings(prev => ({ ...prev, name: newFileName }));
-  }
+  }, []);
 
-  function handleChangeLyrics(lyrics) {
-    setSongSettings(prev => ({
-      ...prev,
-      content: lyrics,
-    }));
-  }
+  const handleChangeLyrics = useCallback(lyrics => {
+    setSongSettings(prev => ({ ...prev, content: lyrics }));
+  }, []);
 
   function handleSettingChange(settingKey, value) {
     setSongSettings(prev => ({
@@ -172,7 +163,7 @@ function PresetSettingsContainer() {
           <button className="btn-red w-full py-2" onClick={() => setOverwrite(prev => !prev)}>
             {overwrite ? 'Overwrite' : "Don't Overwrite"}
           </button>
-          <button className="btn-blue w-full py-2" onClick={handleSaveChanges}>
+          <button className="btn-blue w-full py-2" onClick={() => handleSaveSettingsChanges()}>
             Save Settings
           </button>
         </div>

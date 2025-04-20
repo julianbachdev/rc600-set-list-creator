@@ -1,5 +1,5 @@
 export const rhythmSettingsDefault = {
-  bpm: '120',
+  bpm: 120,
   genre: 'USER',
   key: '',
   keyTrue: '',
@@ -7,7 +7,7 @@ export const rhythmSettingsDefault = {
   loop: '',
   name: '',
   pattern: '__4A_',
-  rhythm: 'OFF',
+  rhythmOnOff: 'OFF',
   timeSignature: '2/4',
   tuning: 0,
   variation: 'A',

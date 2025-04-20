@@ -8,9 +8,9 @@ import { useToggleOpenLyricsModalContext } from '../contexts/ToggleOpenLyricsMod
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSetListsContext } from '../contexts/SetListsContext';
 import { formatSongName } from '../utils/utilityHelpers.js';
-import React, { useEffect, useRef, useState } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListSongsContainer() {
@@ -31,13 +31,12 @@ function SetListSongsContainer() {
     }
   }
 
-  function handleSelectedSong(songName) {
-    if (selectedSong !== songName) {
-      setSelectedSong(songName);
-    } else {
-      setSelectedSong('');
-    }
-  }
+  const handleSelectedSong = useCallback(
+    songName => {
+      setSelectedSong(selectedSong !== songName ? songName : '');
+    },
+    [selectedSong, setSelectedSong]
+  );
 
   useEffect(() => {
     if (selectedSetListSongs.length) {

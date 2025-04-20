@@ -1,6 +1,4 @@
-import { hardSaveSetListsData, openFolder, refreshFiles } from '../utils/dataHelpers.js';
-import { useRepertoireContext } from '../contexts/RepertoireContext.js';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 function SettingsHeader() {
   return (

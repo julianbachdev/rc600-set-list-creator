@@ -46,10 +46,10 @@ function SetListsFinalContainer() {
           >
             {item}
             <button
-              className="btn-red"
+              className="btn-red px-1 py-0.5"
               onClick={e => {
                 e.stopPropagation();
-                removeSetListFinal(setListName, setSetListsFinal);
+                removeSetListFinal(item, setSetListsFinal);
               }}
             >
               &#10006;
