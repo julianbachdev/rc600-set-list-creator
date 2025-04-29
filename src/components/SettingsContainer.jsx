@@ -160,29 +160,41 @@ function PresetSettingsContainer() {
         </div>
 
         <div className="flex gap-2">
-          <button className="btn-red w-full py-2" onClick={() => setOverwrite(prev => !prev)}>
+          <button
+            className="btn-red w-full truncate py-2"
+            onClick={() => setOverwrite(prev => !prev)}
+          >
             {overwrite ? 'Overwrite' : "Don't Overwrite"}
           </button>
-          <button className="btn-blue w-full py-2" onClick={() => handleSaveSettingsChanges()}>
+          <button
+            className="btn-blue w-full truncate py-2"
+            onClick={() => handleSaveSettingsChanges()}
+          >
             Save Settings
           </button>
         </div>
       </div>
       <textarea
         placeholder="Lyrics"
-        className="my-2 h-full w-full resize-none rounded-lg border-2 border-gray-700 bg-transparent p-2 text-white scrollbar-hide"
+        className="text-area"
         value={songSettings.content}
         onChange={e => handleChangeLyrics(e.target.value)}
       />
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between gap-2">
-          <button onClick={() => openFolder(handleSetRepertoire)} className="btn-blue px-3 py-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => openFolder(handleSetRepertoire)}
+            className="btn-blue w-full truncate py-2"
+          >
             Open Folder
           </button>
-          <button onClick={() => refreshFiles(handleSetRepertoire)} className="btn-blue px-3 py-2">
+          <button
+            onClick={() => refreshFiles(handleSetRepertoire)}
+            className="btn-blue w-full truncate py-2"
+          >
             Refresh Files
           </button>
-          <button className="btn-blue px-3 py-2" onClick={handleHardSaveSetListsData}>
+          <button className="btn-blue w-full truncate py-2" onClick={handleHardSaveSetListsData}>
             Save SetLists
           </button>
         </div>

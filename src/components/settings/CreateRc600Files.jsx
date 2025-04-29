@@ -2,20 +2,19 @@ import { useSetListsFinalContext } from '../../contexts/SetListsFinalContext';
 import { useRepertoireContext } from '../../contexts/RepertoireContext';
 import { useSetListsContext } from '../../contexts/SetListsContext';
 import { collectDataForRc600 } from '../../utils/setListHelpers';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 function CreateRc600Files() {
   const { repertoire } = useRepertoireContext();
   const { setLists } = useSetListsContext();
   const { setListsFinal } = useSetListsFinalContext();
-  const [dataForRc600, setDataForRc600] = useState([]);
 
-  useEffect(() => {
-    setDataForRc600(collectDataForRc600(repertoire, setLists, setListsFinal));
-  }, [repertoire, setLists, setListsFinal]);
+  function handleCreateRC600Files() {
+    console.log(collectDataForRc600(repertoire, setLists, setListsFinal));
+  }
 
   return (
-    <button className="btn-red w-full py-2" onClick={() => console.log(dataForRc600)}>
+    <button className="btn-red w-full truncate py-2" onClick={handleCreateRC600Files}>
       CREATE RC600 FILES
     </button>
   );

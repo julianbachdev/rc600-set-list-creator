@@ -72,7 +72,7 @@ function SetListSongsContainer() {
               !isDragging && handleSelectedSong(item);
             }}
           >
-            {formatSongName(item, showSetListSongsDetails)}
+            <span className="list-text">{formatSongName(item, showSetListSongsDetails)}</span>
             <div>
               <button
                 className="btn-red px-1 py-0.5"

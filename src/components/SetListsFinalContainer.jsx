@@ -44,7 +44,7 @@ function SetListsFinalContainer() {
               !isDragging && toggleSelectedSetList(item, selectedSetList, setSelectedSetList)
             }
           >
-            {item}
+            <span className="list-text">{item}</span>
             <button
               className="btn-red px-1 py-0.5"
               onClick={e => {

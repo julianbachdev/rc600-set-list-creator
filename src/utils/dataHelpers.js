@@ -91,3 +91,10 @@ export async function createXMLFile(finalData) {
   const result = await window.electron.ipcRenderer.createXMLFile();
   console.log(result.message);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function createFolder() {
+  const result = await window.electron.ipcRenderer.createFolder();
+  console.log(result.message);
+}

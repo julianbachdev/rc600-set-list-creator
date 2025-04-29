@@ -15,7 +15,7 @@ function SetListsHeader() {
 
   return (
     <div className="header-container">
-      <div className="header-container-label">SET LISTS</div>
+      <div className="header-container-text m-1">SET LISTS</div>
       <form
         onSubmit={e => {
           e.preventDefault();

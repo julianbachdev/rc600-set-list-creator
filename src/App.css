@@ -35,7 +35,11 @@
 }
 
 .header-container-label {
-  @apply mx-2 mt-1 flex justify-between;
+  @apply m-1 flex justify-between;
+}
+
+.header-container-text {
+  @apply block max-w-full truncate;
 }
 
 .header-container-label-btn {
@@ -54,6 +58,10 @@
   @apply rounded-md bg-blue-color text-base hover:bg-blue-hover active:bg-blue-active;
 }
 
+.text-area {
+  @apply my-2 h-full min-h-[50px] w-full resize-none rounded-lg border-2 border-gray-700 bg-transparent p-2 text-white scrollbar-hide;
+}
+
 .btn-red {
   @apply rounded-md bg-red-color text-sm text-text-color hover:bg-red-hover active:bg-red-active;
 }
@@ -64,6 +72,10 @@
 
 .btn-blue {
   @apply rounded-md bg-blue-color text-sm text-text-color hover:bg-blue-hover active:bg-blue-active;
+}
+
+.btn-text {
+  @apply block w-full truncate;
 }
 
 .modal-container {

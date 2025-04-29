@@ -36,7 +36,7 @@ function SetListsContainer() {
               toggleSelectedSetList(item.setListName, selectedSetList, setSelectedSetList)
             }
           >
-            {item.setListName}
+            <span className="list-text">{item.setListName}</span>
             <div>
               <button
                 className="btn-green px-1 py-0.5"

@@ -55,7 +55,7 @@ function RepertoireContainer() {
               handleSelectedSong(item.name);
             }}
           >
-            {formatSongName(item.name, showRepertoireDetails)}
+            <span className="list-text">{formatSongName(item.name, showRepertoireDetails)}</span>
             <div>
               <button
                 className={btnClass}
