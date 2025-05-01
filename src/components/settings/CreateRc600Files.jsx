@@ -1,22 +1,30 @@
 import { useSetListsFinalContext } from '../../contexts/SetListsFinalContext';
-import { useRepertoireContext } from '../../contexts/RepertoireContext';
-import { useSetListsContext } from '../../contexts/SetListsContext';
-import { collectDataForRc600 } from '../../utils/setListHelpers';
-import React from 'react';
+import CreateRc600FilesModal from './CreateRc600FilesModal.jsx';
+import React, { useState } from 'react';
 
 function CreateRc600Files() {
-  const { repertoire } = useRepertoireContext();
-  const { setLists } = useSetListsContext();
   const { setListsFinal } = useSetListsFinalContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleCreateRC600Files() {
-    console.log(collectDataForRc600(repertoire, setLists, setListsFinal));
+    if (setListsFinal.length === 0) {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(true);
+    }
+  }
+
+  function handleModalClose() {
+    setIsModalOpen(false);
   }
 
   return (
-    <button className="btn-red w-full truncate py-2" onClick={handleCreateRC600Files}>
-      CREATE RC600 FILES
-    </button>
+    <>
+      <button className="btn-red w-full truncate py-2" onClick={handleCreateRC600Files}>
+        CREATE RC600 FILES
+      </button>
+      <CreateRc600FilesModal isOpen={isModalOpen} onClose={handleModalClose} />
+    </>
   );
 }
 

@@ -10,5 +10,9 @@ contextBridge.exposeInMainWorld('electron', {
     createTextFiles: repertoire => ipcRenderer.invoke('create-text-files', repertoire),
     overwriteTextFile: (song, options = { overwrite: false }) =>
       ipcRenderer.invoke('overwrite-text-file', song, options),
+    createRc600FolderStructure: (basePath, folderName) =>
+      ipcRenderer.invoke('create-rc600-folder-structure', { basePath, folderName }),
+    populateRc600Folders: (folderName, selectedPath, data) =>
+      ipcRenderer.invoke('populate-rc600-folders', { folderName, selectedPath, data }),
   },
 });

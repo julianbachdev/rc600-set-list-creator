@@ -98,3 +98,50 @@ export async function createFolder() {
   const result = await window.electron.ipcRenderer.createFolder();
   console.log(result.message);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function selectPath() {
+  try {
+    const result = await window.electron.ipcRenderer.invoke('open-folder-dialog');
+    if (result && result.filePaths && result.filePaths.length > 0) {
+      return [result.filePaths[0], ''];
+    }
+    return ['', ''];
+  } catch (err) {
+    return ['', 'Error selecting folder path'];
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function createRc600FolderStructure(basePath, folderName) {
+  try {
+    const result = await window.electron.ipcRenderer.invoke('create-rc600-folder-structure', {
+      basePath,
+      folderName,
+    });
+    if (result.success) {
+      return [true, ''];
+    } else {
+      return [false, result.message];
+    }
+  } catch (error) {
+    return [false, `Error creating RC600 folder structure: ${error.message}`];
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function populateRc600Folders(folderName, selectedPath, data) {
+  const result = await window.electron.ipcRenderer.invoke('populate-rc600-folders', {
+    folderName,
+    selectedPath,
+    data,
+  });
+  if (result.success) {
+    return [true, ''];
+  } else {
+    return [false, result.message];
+  }
+}

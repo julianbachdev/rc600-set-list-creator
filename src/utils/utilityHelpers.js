@@ -189,3 +189,34 @@ export function updateGenreInRepertoire(repertoire) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+export function truncatePathToFit(path, containerWidth) {
+  if (!path || !containerWidth) return '';
+  const span = document.createElement('span');
+  span.style.visibility = 'hidden';
+  span.style.position = 'absolute';
+  span.style.whiteSpace = 'nowrap';
+  document.body.appendChild(span);
+  let currentPath = path;
+  let truncatedPath = currentPath;
+  while (currentPath.length > 0) {
+    span.textContent = currentPath;
+    if (span.offsetWidth <= containerWidth) {
+      truncatedPath = currentPath;
+      break;
+    }
+    currentPath = currentPath.slice(1);
+  }
+  document.body.removeChild(span);
+  return truncatedPath;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export function isValidFolderName(name) {
+  if (!name || name.trim() === '') return false;
+  const invalidChars = /[<>:"/\\|?*\x00-\x1F]/;
+  return !invalidChars.test(name);
+}
+
+////////////////////////////////////////////////////////////////////////////////
