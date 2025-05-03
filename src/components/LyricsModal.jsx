@@ -8,10 +8,10 @@ import React, { useEffect, useState } from 'react';
 function Modal() {
   const { songFile, repertoireOrSetList, handleToggleOpenLyricsModal } =
     useToggleOpenLyricsModalContext();
-  const [showDetails, setShowDetails] = useState(false);
+  const { selectedSetList } = useSelectedSetListContext();
   const { repertoire } = useRepertoireContext();
   const { setLists } = useSetListsContext();
-  const { selectedSetList } = useSelectedSetListContext();
+  const [showDetails, setShowDetails] = useState(false);
 
   function toggleDetails() {
     setShowDetails(prev => !prev);
@@ -50,6 +50,8 @@ function Modal() {
         handleSongNavigation(-1);
       } else if (event.key === 'ArrowRight') {
         handleSongNavigation(1);
+      } else if (event.key === 'Escape') {
+        handleToggleOpenLyricsModal('', '', false);
       }
     };
 

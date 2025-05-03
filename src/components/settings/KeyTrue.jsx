@@ -1,6 +1,6 @@
 import React from 'react';
 
-function KeyTrue({ keyPlayed, keyTrue, handleChange, tuning }) {
+function KeyTrue({ keyTrue, handleChange }) {
   return (
     <input
       placeholder="Relative major"

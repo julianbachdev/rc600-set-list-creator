@@ -9,12 +9,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListsFinalContainer() {
-  const [isDragging, setIsDragging] = useState(false);
-  const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
   const { setListsFinal, setSetListsFinal } = useSetListsFinalContext();
+  const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
+  const [isDragging, setIsDragging] = useState(false);
+
   const listRef = useRef(null);
   const prevListLength = useRef(setListsFinal.length);
-
   useEffect(() => {
     handleAutoScroll(listRef, setListsFinal, prevListLength);
   }, [setListsFinal]);

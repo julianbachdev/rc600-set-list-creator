@@ -1,20 +1,32 @@
-import { toggleSelectedSetList, addSetListFinal, deleteSetList } from '../utils/setListHelpers';
+import {
+  toggleSelectedSetList,
+  addSetListFinal,
+  deleteSetList,
+  handleAutoScroll,
+} from '../utils/setListHelpers';
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
 import { useSetListsFinalContext } from '../contexts/SetListsFinalContext';
 import { useSetListsContext } from '../contexts/SetListsContext';
+import React, { useState, useEffect, useRef } from 'react';
 import { Reorder } from 'framer-motion';
-import React, { useState } from 'react';
 
 function SetListsContainer() {
-  const [isDragging, setIsDragging] = useState(false);
   const { setLists, setSetLists } = useSetListsContext();
   const { selectedSetList, setSelectedSetList } = useSelectedSetListContext();
   const { setListsFinal, setSetListsFinal } = useSetListsFinalContext();
+  const [isDragging, setIsDragging] = useState(false);
+
+  const listRef = useRef(null);
+  const prevListLength = useRef(0);
+  useEffect(() => {
+    handleAutoScroll(listRef, setLists, prevListLength);
+  }, [setLists]);
 
   return (
     <Reorder.Group
       axis="y"
       values={setLists}
+      ref={listRef}
       onReorder={setSetLists}
       className="list-container h-1/2"
     >

@@ -1,7 +1,7 @@
 import ElectronStore from 'electron-store';
 import sanitize from 'sanitize-filename';
 import { menuTemplate } from './menu';
-
+console;
 const { app, BrowserWindow, shell, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -56,7 +56,36 @@ Menu.setApplicationMenu(menu);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-ipcMain.handle('refresh-files', async () => {
+ipcMain.handle('open-files-from-folder', async () => {
+  if (!mainWindow) return [];
+  let folderPath = store.get('folderPath');
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+  });
+  if (!result.canceled && result.filePaths.length > 0) {
+    folderPath = result.filePaths[0];
+  }
+  store.set('folderPath', folderPath);
+  const filesWithContent = await Promise.all(
+    fs
+      .readdirSync(folderPath)
+      .filter(file => file.endsWith('.txt'))
+      .map(async file => {
+        const filePath = path.join(folderPath, file);
+        const content = await fs.promises.readFile(filePath, 'utf-8');
+        return {
+          name: file,
+          path: filePath,
+          content: content,
+        };
+      })
+  );
+  return filesWithContent;
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('refresh-files-from-folder', async () => {
   let folderPath = store.get('folderPath');
   if (!folderPath) {
     if (!mainWindow) return [];
@@ -67,38 +96,6 @@ ipcMain.handle('refresh-files', async () => {
     folderPath = result.filePaths[0];
     store.set('folderPath', folderPath);
   }
-
-  const filesWithContent = await Promise.all(
-    fs
-      .readdirSync(folderPath)
-      .filter(file => file.endsWith('.txt'))
-      .map(async file => {
-        const filePath = path.join(folderPath, file);
-        const content = await fs.promises.readFile(filePath, 'utf-8');
-        return {
-          name: file,
-          path: filePath,
-          content: content,
-        };
-      })
-  );
-
-  return filesWithContent;
-});
-
-////////////////////////////////////////////////////////////////////////////////
-
-ipcMain.handle('open-folder', async () => {
-  if (!mainWindow) return [];
-  let folderPath = store.get('folderPath');
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory'],
-  });
-  if (!result.canceled && result.filePaths.length > 0) {
-    folderPath = result.filePaths[0];
-  }
-  store.set('folderPath', folderPath);
-
   const filesWithContent = await Promise.all(
     fs
       .readdirSync(folderPath)
@@ -118,116 +115,107 @@ ipcMain.handle('open-folder', async () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ipcMain.handle('hard-save-setlists-data', async (event, data) => {
+ipcMain.handle('save-setlists-data-to-file', async (event, data) => {
   try {
-    const desktopPath = path.join(app.getPath('home'), 'Desktop');
-    const filePath = path.join(desktopPath, 'rc600-SetListsData.json');
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Save Set Lists Data',
+      defaultPath:
+        store.get('lastSetListsSavePath') ||
+        path.join(app.getPath('home'), 'Desktop', 'rc600-SetListsData.json'),
+      filters: [
+        { name: 'JSON Files', extensions: ['json'] },
+        { name: 'All Files', extensions: ['*'] },
+      ],
+    });
+
+    if (canceled) {
+      return { success: false, message: 'Save operation cancelled' };
+    }
 
     const dataWithTimestamp = {
       savedAt: new Date().toISOString(),
       setLists: data.setLists,
       setListsFinal: data.setListsFinal,
     };
-
     fs.writeFileSync(filePath, JSON.stringify(dataWithTimestamp, null, 2));
+    store.set('lastSetListsSavePath', filePath);
     dataSaved = true;
-    console.log('Set lists data saved successfully to local drive.');
+    console.log('Set lists data saved successfully to:', filePath);
+    return { success: true, message: 'Set lists data saved successfully' };
   } catch (error) {
-    console.error('Error saving set lists data to local drive:', error);
+    console.error('Error saving set lists data:', error);
+    return { success: false, message: `Error saving set lists data: ${error.message}` };
   }
 });
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ipcMain.handle('load-setlists-data-from-file', () => {
+ipcMain.handle('load-setlists-data-from-file', async (event, chooseFolder) => {
   try {
-    const desktopPath = path.join(app.getPath('home'), 'Desktop');
-    const filePath = path.join(desktopPath, 'rc600-SetListsData.json');
+    let filePath;
+
+    if (chooseFolder) {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        title: 'Load Set Lists Data',
+        defaultPath: store.get('lastSetListsSavePath') || app.getPath('home'),
+        filters: [
+          { name: 'JSON Files', extensions: ['json'] },
+          { name: 'All Files', extensions: ['*'] },
+        ],
+        properties: ['openFile'],
+      });
+
+      if (canceled || !filePaths || filePaths.length === 0) {
+        return { success: false, message: 'Load operation cancelled' };
+      }
+
+      filePath = filePaths[0];
+      store.set('lastSetListsSavePath', filePath);
+    } else {
+      filePath = store.get('lastSetListsSavePath');
+      if (!filePath) {
+        return { success: false, message: 'No previous save location found' };
+      }
+    }
+
     if (fs.existsSync(filePath)) {
       const rawData = fs.readFileSync(filePath);
       const data = JSON.parse(rawData);
-      return data;
+      return { success: true, data };
     } else {
-      return {};
+      return { success: false, message: 'File not found' };
     }
   } catch (error) {
-    console.error('Error loading set lists data from file:', error);
+    console.error('Error loading set lists data:', error);
+    return { success: false, message: `Error loading set lists data: ${error.message}` };
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('save-setlists-data-to-store', async (event, data) => {
+  try {
+    const dataWithTimestamp = {
+      savedAt: new Date().toISOString(),
+      setLists: data.setLists,
+      setListsFinal: data.setListsFinal,
+    };
+    store.set('setListsData', dataWithTimestamp);
+    dataSaved = true;
+    console.log('Set lists data saved successfully to store.');
+  } catch (error) {
+    console.error('Error saving set lists data to store:', error);
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('load-setlists-data-from-store', () => {
+  try {
+    return store.get('setListsData', {});
+  } catch (error) {
+    console.error('Error loading set lists data from store:', error);
     return {};
-  }
-});
-
-////////////////////////////////////////////////////////////////////////////////
-
-ipcMain.handle('create-xml-file', async () => {
-  try {
-    const desktopPath = path.join(app.getPath('home'), 'Desktop');
-    const filePath = path.join(desktopPath, 'default.xml');
-
-    const defaultXMLContent = `<?xml version="1.0" encoding="UTF-8"?>
-<root>
-  <item>
-    <name>Example Item</name>
-    <value>123</value>
-  </item>
-</root>`;
-
-    fs.writeFileSync(filePath, defaultXMLContent, 'utf-8');
-    console.log('XML file created successfully on the desktop.');
-    return { success: true, message: 'XML file created successfully.' };
-  } catch (error) {
-    console.error('Error creating XML file:', error);
-    return { success: false, message: 'Failed to create XML file.' };
-  }
-});
-
-////////////////////////////////////////////////////////////////////////////////
-
-ipcMain.handle('create-text-files', async (event, repertoire) => {
-  try {
-    if (!mainWindow) return { success: false, message: 'Window not available' };
-    const result = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory'],
-      title: 'Select Folder to Save Text Files',
-    });
-    if (result.canceled || result.filePaths.length === 0) {
-      return { success: false, message: 'No folder selected' };
-    }
-
-    const selectedFolder = result.filePaths[0];
-    const createdFiles = [];
-
-    for (const item of repertoire) {
-      const cleanName = sanitize(item.name.trim().replace(/\.txt$/i, ''));
-      if (!cleanName) {
-        return {
-          success: false,
-          message: 'Invalid or empty item name after sanitizing',
-        };
-      }
-
-      const filePath = path.join(selectedFolder, `${cleanName}.txt`);
-
-      try {
-        await fs.promises.writeFile(filePath, item.content, 'utf-8');
-        createdFiles.push(cleanName);
-      } catch (writeError) {
-        return {
-          success: false,
-          message: `Failed to write file ${cleanName}: ${writeError.message}`,
-        };
-      }
-    }
-
-    return {
-      success: true,
-      message: `Successfully created ${createdFiles.length} text files`,
-      files: createdFiles,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: `Failed to create text files: ${error.message}`,
-    };
   }
 });
 
@@ -302,7 +290,6 @@ ipcMain.handle('overwrite-text-file', async (event, song, overwrite = false) => 
 ////////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on('data-is-saved', () => {
-  console.log('Data-is-saved flag set to false');
   dataSaved = false;
 });
 
@@ -365,8 +352,13 @@ ipcMain.handle('populate-rc600-folders', async (event, { folderName, selectedPat
     return verificationResult;
   }
 
-  const appPath = app.getAppPath();
-  const xmlDataTemplateFolder = path.join(appPath, 'src', 'data', 'xmlDataTemplate');
+  let xmlDataTemplateFolder;
+  if (process.env.NODE_ENV === 'development') {
+    xmlDataTemplateFolder = path.join(app.getAppPath(), 'src', 'data', 'xmlDataTemplate');
+  } else {
+    xmlDataTemplateFolder = process.resourcesPath;
+  }
+
   const dataFolder = path.join(selectedPath, folderName, 'DATA');
   const waveFolder = path.join(selectedPath, folderName, 'WAVE');
 
@@ -652,6 +644,16 @@ async function modifyMemoryXml(content, currentData, version, mem) {
   modifiedContent = modifiedContent.replace(
     /<RHYTHM>[\s\S]*?<F>\d+<\/F>[\s\S]*?<\/RHYTHM>/g,
     match => match.replace(/<F>\d+<\/F>/, `<F>${currentData.timeSignature.rc600Value}</F>`)
+  );
+  modifiedContent = modifiedContent.replace(
+    /<RHYTHM>[\s\S]*?<M>\d+<\/M>[\s\S]*?<\/RHYTHM>/g,
+    match => match.replace(/<M>\d+<\/M>/, `<M>${currentData.rhythmOnOff.rc600Value}</M>`)
+  );
+
+  // Modify KEY in all TRACKS
+  modifiedContent = modifiedContent.replace(
+    /<AB_HARMONIST_MANUAL>[\s\S]*?<D>\d+<\/D>[\s\S]*?<\/AB_HARMONIST_MANUAL>/g,
+    match => match.replace(/<D>\d+<\/D>/, `<D>${currentData.keyTrue.rc600Value}</D>`)
   );
 
   return modifiedContent;

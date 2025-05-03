@@ -1,12 +1,19 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    extraResource: [
+      'src/data/xmlDataTemplate/RHYTHM.RC0',
+      'src/data/xmlDataTemplate/SYSTEM1.RC0',
+      'src/data/xmlDataTemplate/MEMORY001A.RC0',
+    ],
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: 'rc600_set_list_master',
+      },
     },
     {
       name: '@electron-forge/maker-zip',

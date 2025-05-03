@@ -3,27 +3,31 @@ import {
   removeSongFromSetList,
   handleAutoScroll,
 } from '../utils/setListHelpers';
-import { useShowSetListSongsDetailsContext } from '../contexts/ShowSetListSongsDetailsContext.js';
 import { useToggleOpenLyricsModalContext } from '../contexts/ToggleOpenLyricsModalContext.js';
+import { useShowSongDetailsContext } from '../contexts/ShowSongDetailsContext.js';
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
-import { useRepertoireContext } from '../contexts/RepertoireContext.js';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSetListsContext } from '../contexts/SetListsContext';
 import { formatSongName } from '../utils/utilityHelpers.js';
+import React, { useEffect, useRef, useState } from 'react';
 import { Reorder } from 'framer-motion';
 
 function SetListSongsContainer() {
   const { setLists, setSetLists } = useSetListsContext();
   const { selectedSetList } = useSelectedSetListContext();
-  const { showSetListSongsDetails } = useShowSetListSongsDetailsContext();
-  const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
+  const { showSetListSongsDetails } = useShowSongDetailsContext();
   const { selectedSong, setSelectedSong } = useSelectedSongContext();
+  const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
   const [isDragging, setIsDragging] = useState(false);
-  const listRef = useRef(null);
-  const prevListLength = useRef(0);
+
   const selectedSetListSongs =
     setLists.find(s => s.setListName === selectedSetList)?.setListSongs || [];
+
+  const listRef = useRef(null);
+  const prevListLength = useRef(0);
+  useEffect(() => {
+    handleAutoScroll(listRef, selectedSetListSongs, prevListLength);
+  }, [selectedSetListSongs]);
 
   function handleReorderSetListSongs(newOrder) {
     if (selectedSetList) {
@@ -31,18 +35,13 @@ function SetListSongsContainer() {
     }
   }
 
-  const handleSelectedSong = useCallback(
-    songName => {
-      setSelectedSong(selectedSong !== songName ? songName : '');
-    },
-    [selectedSong, setSelectedSong]
-  );
-
-  useEffect(() => {
-    if (selectedSetListSongs.length) {
-      handleAutoScroll(listRef, selectedSetListSongs, prevListLength);
+  function handleSelectedSong(songName) {
+    if (selectedSong !== songName) {
+      setSelectedSong(songName);
+    } else {
+      setSelectedSong('');
     }
-  }, [selectedSetListSongs]);
+  }
 
   return (
     <Reorder.Group

@@ -1,5 +1,5 @@
-import { useShowRepertoireDetailsContext } from '../contexts/ShowRepertoireDetailsContext.js';
 import { useToggleOpenLyricsModalContext } from '../contexts/ToggleOpenLyricsModalContext.js';
+import { useShowSongDetailsContext } from '../contexts/ShowSongDetailsContext.js';
 import { useSelectedSetListContext } from '../contexts/SelectedSetListContext';
 import { toggleAddRemoveSongsFromSetList } from '../utils/setListHelpers.js';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
@@ -13,10 +13,11 @@ function RepertoireContainer() {
   const { repertoire } = useRepertoireContext();
   const { searchSongs } = useSearchSongsContext();
   const { setLists, setSetLists } = useSetListsContext();
-  const { showRepertoireDetails } = useShowRepertoireDetailsContext();
   const { selectedSetList } = useSelectedSetListContext();
-  const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
+  const { showRepertoireDetails } = useShowSongDetailsContext();
   const { selectedSong, setSelectedSong } = useSelectedSongContext();
+  const { handleToggleOpenLyricsModal, setRepertoireOrSetList } = useToggleOpenLyricsModalContext();
+
   const searchTerm = searchSongs.toLowerCase();
   const songs = repertoire.filter(item => {
     return item.name.toLowerCase().includes(searchTerm);
@@ -24,7 +25,7 @@ function RepertoireContainer() {
 
   function handleSelectedSong(songName) {
     if (selectedSong !== songName) {
-      setSelectedSong(songName, repertoire);
+      setSelectedSong(songName);
     } else {
       setSelectedSong('');
     }

@@ -1,21 +1,22 @@
 import {
   overWriteTextFile,
-  refreshFiles,
-  hardSaveSetListsData,
-  openFolder,
+  refreshFilesFromFolder,
+  saveSetListsDataToFile,
+  openFilesFromFolder,
 } from '../utils/dataHelpers.js';
 import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext.js';
-import React, { useState, useEffect, useCallback } from 'react';
 import CreateRc600Files from './settings/CreateRc600Files.jsx';
 import { rhythmSettingsDefault } from '../data/rhythmData.js';
 import TimeSignature from './settings/TimeSignature.jsx';
+import React, { useState, useEffect } from 'react';
 import Variation from './settings/Variation.jsx';
 import LoopNotes from './settings/LoopNotes.jsx';
 import Pattern from './settings/Pattern.jsx';
 import KeyTrue from './settings/KeyTrue.jsx';
+import Rhythm from './settings/Rhythm.jsx';
 import Genre from './settings/Genre.jsx';
 import Name from './settings/Name.jsx';
 import Kit from './settings/Kit.jsx';
@@ -24,9 +25,9 @@ import Key from './settings/Key.jsx';
 
 function PresetSettingsContainer() {
   const { setLists } = useSetListsContext();
+  const { selectedSong } = useSelectedSongContext();
   const { setListsFinal } = useSetListsFinalContext();
   const { repertoire, handleSetRepertoire } = useRepertoireContext();
-  const { selectedSong, setSelectedSong } = useSelectedSongContext();
   const [overwrite, setOverwrite] = useState(true);
   const [songSettings, setSongSettings] = useState({
     content: '',
@@ -36,6 +37,7 @@ function PresetSettingsContainer() {
 
   useEffect(() => {
     const selectedSongData = repertoire.find(song => song.name === selectedSong) || {};
+    console.log(selectedSongData);
     setSongSettings(prev => ({
       ...prev,
       content: selectedSongData.content || '',
@@ -45,7 +47,10 @@ function PresetSettingsContainer() {
         bpm: selectedSongData.settings?.bpm || rhythmSettingsDefault.bpm,
         genre: selectedSongData.settings?.genre || rhythmSettingsDefault.genre,
         key: selectedSongData.settings?.key || rhythmSettingsDefault.key,
-        keyTrue: selectedSongData.settings?.keyTrue || rhythmSettingsDefault.keyTrue,
+        keyTrue:
+          selectedSongData.settings?.keyTrue ||
+          selectedSongData.settings?.key ||
+          rhythmSettingsDefault.key,
         kit: selectedSongData.settings?.kit || rhythmSettingsDefault.kit,
         loop: selectedSongData.settings?.loop || rhythmSettingsDefault.loop,
         name: selectedSongData.settings?.name || rhythmSettingsDefault.name,
@@ -53,28 +58,27 @@ function PresetSettingsContainer() {
         rhythm: selectedSongData.settings?.rhythm || rhythmSettingsDefault.rhythm,
         timeSignature:
           selectedSongData.settings?.timeSignature || rhythmSettingsDefault.timeSignature,
-        tuning: selectedSongData.settings?.tuning || rhythmSettingsDefault.tuning,
         variation: selectedSongData.settings?.variation || rhythmSettingsDefault.variation,
       },
     }));
   }, [selectedSong, repertoire]);
 
   useEffect(() => {
-    refreshFiles(handleSetRepertoire);
+    refreshFilesFromFolder(handleSetRepertoire);
   }, []);
 
   function handleSaveSettingsChanges() {
     overWriteTextFile(songSettings, overwrite);
-    setSelectedSong('');
+    refreshFilesFromFolder(handleSetRepertoire);
   }
 
-  const handleFileNameChange = useCallback(newFileName => {
+  function handleFileNameChange(newFileName) {
     setSongSettings(prev => ({ ...prev, name: newFileName }));
-  }, []);
+  }
 
-  const handleChangeLyrics = useCallback(lyrics => {
+  function handleChangeLyrics(lyrics) {
     setSongSettings(prev => ({ ...prev, content: lyrics }));
-  }, []);
+  }
 
   function handleSettingChange(settingKey, value) {
     setSongSettings(prev => ({
@@ -83,14 +87,14 @@ function PresetSettingsContainer() {
     }));
   }
 
-  function handleHardSaveSetListsData() {
+  function handleSaveSetListsDataToFile() {
     const confirmed = window.confirm('Do you want to save the set lists?');
     if (!confirmed) return;
     const data = {
       setLists: setLists,
       setListsFinal: setListsFinal,
     };
-    hardSaveSetListsData(data);
+    saveSetListsDataToFile(data);
   }
 
   return (
@@ -106,10 +110,16 @@ function PresetSettingsContainer() {
           handleChange={value => handleSettingChange('name', value)}
           placeholder="Preset name"
         />
-        <LoopNotes
-          loop={songSettings.settings.loop}
-          handleChange={value => handleSettingChange('loop', value)}
-        />
+        <div className="flex gap-2">
+          <LoopNotes
+            loop={songSettings.settings.loop}
+            handleChange={value => handleSettingChange('loop', value)}
+          />
+          <Rhythm
+            rhythm={songSettings.settings.rhythm}
+            handleChange={value => handleSettingChange('rhythm', value)}
+          />
+        </div>
 
         <div className="flex gap-2">
           <Key
@@ -118,7 +128,6 @@ function PresetSettingsContainer() {
           />
           <KeyTrue
             keyTrue={songSettings.settings.keyTrue}
-            tuning={songSettings.settings.tuning}
             handleChange={value => handleSettingChange('keyTrue', value)}
           />
         </div>
@@ -183,18 +192,18 @@ function PresetSettingsContainer() {
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
           <button
-            onClick={() => openFolder(handleSetRepertoire)}
+            onClick={() => openFilesFromFolder(handleSetRepertoire)}
             className="btn-blue w-full truncate py-2"
           >
-            Open Folder
+            Open Files
           </button>
           <button
-            onClick={() => refreshFiles(handleSetRepertoire)}
+            onClick={() => refreshFilesFromFolder(handleSetRepertoire)}
             className="btn-blue w-full truncate py-2"
           >
             Refresh Files
           </button>
-          <button className="btn-blue w-full truncate py-2" onClick={handleHardSaveSetListsData}>
+          <button className="btn-blue w-full truncate py-2" onClick={handleSaveSetListsDataToFile}>
             Save SetLists
           </button>
         </div>

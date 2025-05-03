@@ -61,21 +61,6 @@ export function reorderSetListSongs(selectedSetList, newOrder, setSetLists) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function removeSongFromSetList(songToRemove, selectedSetList, setSetLists) {
-  setSetLists(prev =>
-    prev.map(set =>
-      set.setListName === selectedSetList
-        ? {
-            ...set,
-            setListSongs: set.setListSongs.filter(song => song !== songToRemove),
-          }
-        : set
-    )
-  );
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 export function toggleAddRemoveSongsFromSetList(song, selectedSetList, setSetLists) {
   if (!selectedSetList) return;
   setSetLists(prev =>
@@ -94,11 +79,28 @@ export function toggleAddRemoveSongsFromSetList(song, selectedSetList, setSetLis
 
 ////////////////////////////////////////////////////////////////////////////////
 
+export function removeSongFromSetList(songToRemove, selectedSetList, setSetLists) {
+  setSetLists(prev =>
+    prev.map(set =>
+      set.setListName === selectedSetList
+        ? {
+            ...set,
+            setListSongs: set.setListSongs.filter(song => song !== songToRemove),
+          }
+        : set
+    )
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 function getSongsFromSetLists(setLists, setListsFinal) {
   return setListsFinal.flatMap(setName =>
     setLists.filter(list => list.setListName === setName).flatMap(list => list.setListSongs)
   );
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 function getSongDataFromSongList(repertoire, songList) {
   return songList
@@ -108,6 +110,8 @@ function getSongDataFromSongList(repertoire, songList) {
       return { ...song };
     });
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function filterSongDataValues(songData, rhythmMenuData) {
   return songData.map((song, index) => {
@@ -203,6 +207,8 @@ export function filterSongDataValues(songData, rhythmMenuData) {
     return { ...settings, ...newSettings };
   });
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function collectDataForRc600(repertoire, setLists, setListsFinal) {
   const orderedSongNames = getSongsFromSetLists(setLists, setListsFinal);

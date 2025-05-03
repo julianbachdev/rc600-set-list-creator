@@ -1,22 +1,32 @@
-export async function loadSetListsData(property, setContext) {
+export async function loadSetListsDataFromFile(
+  chooseFolder,
+  property1,
+  setContext1,
+  property2,
+  setContext2
+) {
   try {
-    const dataFromFile = await window.electron.ipcRenderer.loadSetListsDataFromFile();
-    if (dataFromFile?.[property]) {
-      setContext(dataFromFile[property]);
+    const result = await window.electron.ipcRenderer.loadSetListsDataFromFile(chooseFolder);
+    if (result.success && result.data?.[property1] && result.data?.[property2]) {
+      setContext1(result.data[property1]);
+      setContext2(result.data[property2]);
     } else {
-      setContext([]);
+      console.error(result.message || 'Error loading data');
+      setContext1([]);
+      setContext2([]);
     }
   } catch (error) {
-    console.error(`Error loading ${property} data from file:`, error);
-    setContext([]);
+    console.error(`Error loading ${property1} and ${property2} data from file:`, error);
+    setContext1([]);
+    setContext2([]);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export async function hardSaveSetListsData(data) {
+export async function saveSetListsDataToFile(data) {
   try {
-    await window.electron.ipcRenderer.invoke('hard-save-setlists-data', data);
+    await window.electron.ipcRenderer.invoke('save-setlists-data-to-file', data);
   } catch (error) {
     console.error('Error saving set lists data to local drive:', error);
   }
@@ -24,9 +34,24 @@ export async function hardSaveSetListsData(data) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function openFolder(setRepertoire) {
+export async function openFilesFromFolder(setRepertoire) {
   window.electron.ipcRenderer
-    .invoke('open-folder')
+    .invoke('open-files-from-folder')
+    .then(files => {
+      setRepertoire(files);
+    })
+    .catch(error => console.error('Error opening folder:', error));
+}
+
+export async function openFilesFromFolderWithDialog(setRepertoire) {
+  const [path, error] = await selectPath();
+  if (error) {
+    console.error('Error selecting path:', error);
+    return;
+  }
+
+  window.electron.ipcRenderer
+    .invoke('open-files-from-folder', path)
     .then(files => {
       setRepertoire(files);
     })
@@ -35,28 +60,13 @@ export function openFolder(setRepertoire) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function refreshFiles(setRepertoire) {
+export function refreshFilesFromFolder(setRepertoire) {
   window.electron.ipcRenderer
-    .invoke('refresh-files')
+    .invoke('refresh-files-from-folder')
     .then(files => {
       setRepertoire(files);
     })
     .catch(error => console.error('Error refreshing files:', error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-export function createTextFiles(repertoire) {
-  window.electron.ipcRenderer
-    .invoke('create-text-files', repertoire)
-    .then(result => {
-      if (result && result.success) {
-        console.log(result.message);
-      } else {
-        console.error(result?.message || 'Unknown error creating text files');
-      }
-    })
-    .catch(error => console.error('Error creating text files:', error));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,17 +89,6 @@ export function overWriteTextFile(song, overwrite) {
       }
     })
     .catch(error => console.error('Error saving song file:', error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-export async function createXMLFile(finalData) {
-  if (finalData.length === 0) {
-    window.alert('Please add set lists to final');
-    return;
-  }
-  const result = await window.electron.ipcRenderer.createXMLFile();
-  console.log(result.message);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

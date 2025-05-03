@@ -105,7 +105,6 @@ export function extractMetadataFromContent(song) {
     const genreExists = rhythmEntry?.genre?.some(item => item?.name === genreValue);
     parsed.genre = genreExists ? genreValue : rhythmEntry.genre[0].name;
   }
-
   if ('pattern' in parsed) {
     const patternValue = parsed.pattern;
     const timeSignature = parsed.timeSignature;

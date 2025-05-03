@@ -11,9 +11,8 @@ import SettingsHeader from './components/SettingsHeader.jsx';
 import * as React from 'react';
 import './App.css';
 
-import { ShowSetListSongsDetailsProvider } from './contexts/ShowSetListSongsDetailsContext.js';
-import { ShowRepertoireDetailsProvider } from './contexts/ShowRepertoireDetailsContext.js';
 import { useToggleOpenLyricsModalContext } from './contexts/ToggleOpenLyricsModalContext';
+import { ShowSongDetailsProvider } from './contexts/ShowSongDetailsContext.js';
 import { SearchSongsProvider } from './contexts/SearchSongsContext.js';
 import LyricsModal from './components/LyricsModal.jsx';
 
@@ -30,19 +29,19 @@ function App() {
       </div>
 
       <div className="container">
-        <ShowSetListSongsDetailsProvider>
+        <ShowSongDetailsProvider>
           <SetListSongsHeader />
           <SetListSongsContainer />
-        </ShowSetListSongsDetailsProvider>
+        </ShowSongDetailsProvider>
       </div>
 
       <div className="container">
-        <ShowRepertoireDetailsProvider>
+        <ShowSongDetailsProvider>
           <SearchSongsProvider>
             <RepertoireHeader />
             <RepertoireContainer />
           </SearchSongsProvider>
-        </ShowRepertoireDetailsProvider>
+        </ShowSongDetailsProvider>
       </div>
 
       <div className="container">

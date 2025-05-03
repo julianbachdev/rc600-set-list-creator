@@ -1,15 +1,14 @@
 export const rhythmSettingsDefault = {
   bpm: 120,
   genre: 'USER',
-  key: '',
+  key: 'C',
   keyTrue: '',
   kit: 'BRUSH',
   loop: '',
   name: '',
   pattern: '__4A_',
-  rhythmOnOff: 'OFF',
+  rhythm: 'OFF',
   timeSignature: '2/4',
-  tuning: 0,
   variation: 'A',
 };
 

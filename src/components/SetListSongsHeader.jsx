@@ -1,9 +1,8 @@
-import { useShowSetListSongsDetailsContext } from '../contexts/ShowSetListSongsDetailsContext.js';
+import { useShowSongDetailsContext } from '../contexts/ShowSongDetailsContext.js';
 import React from 'react';
 
 function SetListSongsHeader() {
-  const { showSetListSongsDetails, setShowSetListSongsDetails } =
-    useShowSetListSongsDetailsContext();
+  const { showSetListSongsDetails, setShowSetListSongsDetails } = useShowSongDetailsContext();
 
   return (
     <div className="header-container">
