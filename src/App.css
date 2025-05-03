@@ -83,15 +83,15 @@
 }
 
 .modal-header {
-  @apply flex w-[70%] justify-between rounded-t-2xl border-x-2 border-t-2 border-gray-300 bg-bg-secondary-color px-6 py-4 text-2xl text-white;
+  @apply flex w-[50%] justify-between rounded-t-2xl border-x-2 border-t-2 border-gray-300 bg-bg-secondary-color px-6 py-4 text-2xl text-white;
 }
 
 .modal-body {
-  @apply flex h-[90%] w-[70%] justify-between overflow-y-auto whitespace-pre-wrap rounded-b-2xl border-x-2 border-b-2 border-gray-300 bg-gradient-to-b from-bg-primary-color to-bg-secondary-color p-5 text-3xl text-white scrollbar-hide;
+  @apply flex h-[90%] w-[50%] justify-between overflow-y-auto whitespace-pre-wrap rounded-b-2xl border-x-2 border-b-2 border-gray-300 bg-gradient-to-b from-bg-primary-color to-bg-secondary-color p-5 text-3xl text-white scrollbar-hide;
 }
 
 .modal-lyrics {
-  @apply w-full overflow-y-auto whitespace-pre-wrap rounded-2xl border border-2 border-gray-700 p-5 text-2xl text-white scrollbar-hide;
+  @apply text-sm text-white scrollbar-hide;
 }
 
 .modal-nav-button {

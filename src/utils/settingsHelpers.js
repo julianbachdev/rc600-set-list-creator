@@ -58,6 +58,15 @@ export function getKits() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+export function getKeyTrueValue(key) {
+  const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const normalized = key.replace(/min/i, '').trim().toUpperCase();
+  const index = keys.indexOf(normalized);
+  return index !== -1 ? index : 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 export function getSampleRatePerMeasure(bpm, timeSignature) {
   let secondsPerMeasure;
   const sampleRate = 441000;
@@ -103,20 +112,3 @@ export function getSampleRatePerMeasure(bpm, timeSignature) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-export function getSongMeta(songName, repertoire) {
-  const songObj = repertoire.find(item => item.name === songName);
-  if (!songObj || typeof songObj.content !== 'string') return null;
-  const lines = songObj.content.split('\n');
-  const metaLines = lines.filter(line => line.trim().startsWith('#'));
-  const metaObj = metaLines.reduce((acc, line) => {
-    const cleanedLine = line.slice(1).trim();
-    const [key, ...rest] = cleanedLine.split(':');
-    if (key && rest.length > 0) {
-      acc[key.trim()] = rest.join(':').trim();
-    }
-    return acc;
-  }, {});
-  metaObj.name = songName;
-  return metaObj;
-}

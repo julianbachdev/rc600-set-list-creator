@@ -54,7 +54,9 @@ function SetListsContainer() {
                 className="btn-green px-1 py-0.5"
                 onClick={e => {
                   e.stopPropagation();
-                  addSetListFinal(item.setListName, setListsFinal, setSetListsFinal);
+                  if (item.setListSongs.length > 0) {
+                    addSetListFinal(item, setListsFinal, setSetListsFinal);
+                  }
                 }}
               >
                 &#10004;

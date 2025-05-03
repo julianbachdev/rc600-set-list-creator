@@ -1,4 +1,4 @@
-import { getSampleRatePerMeasure } from './settingsHelpers';
+import { getKeyTrueValue, getSampleRatePerMeasure } from './settingsHelpers';
 import { rhythmMenuData } from '../data/rhythmData';
 
 export function toggleSelectedSetList(setListName, selectedSetList, setSelectedSetList) {
@@ -26,12 +26,12 @@ export function deleteSetList(setListName, setSetLists, setSetListsFinal) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function addSetListFinal(setListName, setListsFinal, setSetListsFinal) {
-  if (setListsFinal.includes(setListName)) {
+export function addSetListFinal(item, setListsFinal, setSetListsFinal) {
+  if (setListsFinal.includes(item.setListName)) {
     alert('You have already added this playlist');
     return;
   }
-  setSetListsFinal(prev => [...prev, setListName]);
+  if (item.setListSongs.length > 0) setSetListsFinal(prev => [...prev, item.setListName]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +94,15 @@ export function removeSongFromSetList(songToRemove, selectedSetList, setSetLists
 
 ////////////////////////////////////////////////////////////////////////////////
 
+export function collectDataForRc600(repertoire, setLists, setListsFinal) {
+  const orderedSongNames = getSongsFromSetLists(setLists, setListsFinal);
+  const songsData = getSongDataFromSongList(repertoire, orderedSongNames);
+  const songsDataAndValues = filterSongDataValues(songsData, rhythmMenuData);
+  return songsDataAndValues;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 function getSongsFromSetLists(setLists, setListsFinal) {
   return setListsFinal.flatMap(setName =>
     setLists.filter(list => list.setListName === setName).flatMap(list => list.setListSongs)
@@ -113,9 +122,9 @@ function getSongDataFromSongList(repertoire, songList) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function filterSongDataValues(songData, rhythmMenuData) {
+function filterSongDataValues(songData, rhythmMenuData) {
   return songData.map((song, index) => {
-    const { key, tuning, loop, ...settings } = song.settings || {};
+    const { key, loop, ...settings } = song.settings || {};
     const newSettings = {};
     const defaultNameChar = `Memory(${index + 1})`;
     const paddedDefaultName = defaultNameChar.padEnd(12, ' ');
@@ -141,7 +150,7 @@ export function filterSongDataValues(songData, rhythmMenuData) {
     // Key True
     newSettings.keyTrue = {
       value: settings.keyTrue,
-      rc600Value: keyTrueDefault,
+      rc600Value: settings.keyTrue ? getKeyTrueValue(settings.keyTrue) : keyTrueDefault,
     };
 
     // Bpm
@@ -200,7 +209,7 @@ export function filterSongDataValues(songData, rhythmMenuData) {
 
     // Samples Per Measure
     newSettings.samplesPerMeasure = {
-      value: 'SAMPLES PER MEASURE',
+      value: 'SAMPLES',
       rc600Value: getSampleRatePerMeasure(newSettings.bpm.value, newSettings.timeSignature.value),
     };
 
@@ -209,10 +218,3 @@ export function filterSongDataValues(songData, rhythmMenuData) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-export function collectDataForRc600(repertoire, setLists, setListsFinal) {
-  const orderedSongNames = getSongsFromSetLists(setLists, setListsFinal);
-  const songsData = getSongDataFromSongList(repertoire, orderedSongNames);
-  const songsDataAndValues = filterSongDataValues(songsData, rhythmMenuData);
-  return songsDataAndValues;
-}

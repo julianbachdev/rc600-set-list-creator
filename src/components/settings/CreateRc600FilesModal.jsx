@@ -20,13 +20,16 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
   const [error, setError] = useState('');
   const [displayedPath, setDisplayedPath] = useState('');
   const pathRef = useRef(null);
-  const isSetListsFinalEmpty = !setListsFinal || setListsFinal.length === 0;
   const [operationStatus, setOperationStatus] = useState(null);
+
+  const isSetListsFinalEmpty = !setListsFinal || setListsFinal.length === 0;
+  const data = collectDataForRc600(repertoire, setLists, setListsFinal);
 
   function handleFolderNameChange(e) {
     setFolderName(e.target.value);
     setError('');
   }
+
   async function handleSelectPath() {
     const [path, error] = await selectPath();
     if (error) {
@@ -38,6 +41,7 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
   }
 
   async function handleCreateRc600Files() {
+    setError('');
     if (!isValidFolderName(folderName)) {
       setError('Please enter a valid folder name.');
       return;
@@ -46,20 +50,25 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
       setError('Please select a destination folder.');
       return;
     }
-    const [folderSuccess, folderError] = await createRc600FolderStructure(selectedPath, folderName);
-    if (!folderSuccess) {
-      setError(folderError);
-      setOperationStatus('error');
-      return;
-    }
-
-    const data = collectDataForRc600(repertoire, setLists, setListsFinal);
-    const [success, error] = await populateRc600Folders(folderName, selectedPath, data);
-
-    if (success) {
-      setOperationStatus('success');
-    } else {
-      setError(error);
+    try {
+      const [folderSuccess, folderError] = await createRc600FolderStructure(
+        selectedPath,
+        folderName
+      );
+      if (!folderSuccess) {
+        setError(folderError);
+        setOperationStatus('error');
+        return;
+      }
+      const [success, error] = await populateRc600Folders(folderName, selectedPath, data);
+      if (success) {
+        setOperationStatus('success');
+      } else {
+        setError(error);
+        setOperationStatus('error');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
       setOperationStatus('error');
     }
   }
@@ -105,12 +114,12 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
     );
   }
 
-  if (isSetListsFinalEmpty) {
+  if (isSetListsFinalEmpty || data.length === 0) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="flex w-96 flex-col items-center rounded-lg bg-white p-6">
           <div className="mb-6 text-center text-lg font-semibold">
-            You have not added any Set Lists to Set Lists Final.
+            You have not added any Set Lists/Songs to Set Lists Final.
           </div>
           <button
             onClick={onClose}

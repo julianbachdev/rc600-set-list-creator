@@ -1,7 +1,7 @@
 import ElectronStore from 'electron-store';
 import sanitize from 'sanitize-filename';
 import { menuTemplate } from './menu';
-console;
+
 const { app, BrowserWindow, shell, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -49,6 +49,33 @@ function createWindow() {
 
 const menu = Menu.buildFromTemplate(menuTemplate);
 Menu.setApplicationMenu(menu);
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// APP ON HANDLERS
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+app.on('ready', createWindow);
+
+app.whenReady().then(() => {
+  const setListsData = store.get('setListsData', []);
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('load-setlists-data', setListsData); // Send data to renderer
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+
+app.on('window-all-closed', e => {
+  e.preventDefault();
+});
+
+app.on('before-quit', handleAppExit);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -375,33 +402,6 @@ ipcMain.handle('populate-rc600-folders', async (event, { folderName, selectedPat
     message: 'Successfully copied all files to DATA folder',
   };
 });
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// APP ON HANDLERS
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-app.on('ready', createWindow);
-
-app.whenReady().then(() => {
-  const setListsData = store.get('setListsData', []);
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send('load-setlists-data', setListsData); // Send data to renderer
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-app.on('window-all-closed', e => {
-  e.preventDefault();
-});
-
-app.on('before-quit', handleAppExit);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

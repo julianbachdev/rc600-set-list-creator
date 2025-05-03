@@ -434,7 +434,7 @@ export const rhythmMenuData = [
           { name: '8BEAT1', value: 30 },
           { name: '8BEAT2', value: 31 },
           { name: '8BEAT3', value: 32 },
-          { name: '8BEAT4', value: 32 },
+          { name: '8BEAT4', value: 33 },
         ],
       },
       {

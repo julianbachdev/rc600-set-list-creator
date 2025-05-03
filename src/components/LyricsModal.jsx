@@ -84,7 +84,7 @@ function Modal() {
         >
           &#x25C0;
         </button>
-        <div className="text-sm">{songFile.content}</div>
+        <div className="modal-lyrics">{songFile.content}</div>
         <button
           onClick={() => handleSongNavigation(1)}
           className="modal-nav-button btn-blue right-0"

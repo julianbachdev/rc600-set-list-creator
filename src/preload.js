@@ -8,7 +8,6 @@ contextBridge.exposeInMainWorld('electron', {
     saveSetListsDataToFile: data => ipcRenderer.invoke('save-setlists-data-to-file', data),
     loadSetListsDataFromFile: (chooseFolder = false) =>
       ipcRenderer.invoke('load-setlists-data-from-file', chooseFolder),
-
     overwriteTextFile: (song, options = { overwrite: false }) =>
       ipcRenderer.invoke('overwrite-text-file', song, options),
     createRc600FolderStructure: (basePath, folderName) =>

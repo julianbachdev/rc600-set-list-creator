@@ -1,13 +1,13 @@
 import { rhythmMenuData, rhythmSettingsDefault } from '../data/rhythmData.js';
+import { u } from 'framer-motion/client';
 
-export function extractTxtFileName(files) {
-  return files.filter(file => file.name && file.name.includes('.txt')).map(file => file.name);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-export function extractTxtFileContent(files) {
-  return files.filter(file => file.content && file.name.includes('.txt')).map(file => file.content);
+// NOT USED ANYMORE
+export function extractCapoNumber(str) {
+  const parenMatch = str.match(/\(([^)]*)\)/);
+  if (!parenMatch) return 0;
+  const insideParens = parenMatch[1];
+  const capoMatch = insideParens.match(/capo(\d+)/i);
+  return capoMatch ? parseInt(capoMatch[1], 10) : 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,16 +22,21 @@ export function formatSongName(song, showDetails) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function extractCapoNumber(str) {
-  const match = str.match(/\(.*?capo(\d+).*?\)/i);
-  return match ? parseInt(match[1], 10) : 0;
+function getRelativeMajorKey(key) {
+  const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  if (typeof key === 'string' && key.toLowerCase().includes('min')) {
+    const root = key.replace(/min/i, '').trim();
+    const index = keys.indexOf(root);
+    if (index === -1) return key;
+    return keys[(index + 3) % 12];
+  }
+  return key;
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 export function extractMetadataFromContent(song) {
   const songName = song?.name ?? '';
   const settingsStructure = { ...rhythmSettingsDefault, name: shortenSongName(songName, 12) };
+
   const lines = song?.content?.split('\n') ?? [];
   const parsed = lines
     .filter(line => line.trim().startsWith('#'))
@@ -40,7 +45,7 @@ export function extractMetadataFromContent(song) {
       const [key, ...rest] = trimmed.split(':');
       const cleanKey = key.trim();
       const value = rest.join(':').trim();
-      if (cleanKey && value && cleanKey in rhythmSettingsDefault) {
+      if (cleanKey && cleanKey in rhythmSettingsDefault) {
         acc[cleanKey] = value;
       }
       return acc;
@@ -59,7 +64,7 @@ export function extractMetadataFromContent(song) {
   if ('keyTrue' in parsed) {
     const upperFirst = parsed.keyTrue.charAt(0).toUpperCase() + parsed.keyTrue.slice(1);
     const isValidNote = /^[A-G]/.test(upperFirst);
-    parsed.keyTrue = isValidNote ? upperFirst : parsed.key;
+    parsed.keyTrue = isValidNote ? upperFirst : getRelativeMajorKey(parsed.key);
   }
   if ('kit' in parsed) {
     const validKits = rhythmMenuData[0].kit.map(item => item.name.toUpperCase());
@@ -77,11 +82,6 @@ export function extractMetadataFromContent(song) {
     const value = parsed.rhythm.toLowerCase();
     parsed.rhythm =
       value === 'on' || value === 'off' ? value.toUpperCase() : rhythmSettingsDefault.rhythm;
-  }
-  if ('tuning' in parsed) {
-    const value = parsed.tuning;
-    const num = Number(value);
-    parsed.tuning = Number.isInteger(num) ? num : rhythmSettingsDefault.tuning;
   }
   if ('variation' in parsed) {
     const value = parsed.variation.toUpperCase();
@@ -122,6 +122,7 @@ export function extractMetadataFromContent(song) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// HELPER FUNCTION FOR extractMetadataFromContent
 function shortenSongName(songName, maxLength = 12) {
   // Step 1: Remove .txt extension
   let cleanedName = songName.replace('.txt', '').trim();
@@ -165,26 +166,6 @@ function shortenSongName(songName, maxLength = 12) {
     return cleanedName;
   }
   return cleanedName.slice(0, maxLength);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-export function updateGenreInRepertoire(repertoire) {
-  return repertoire.map(item => {
-    const updatedContent = item.content
-      .split('\n')
-      .map(line => {
-        if (line.toLowerCase().startsWith('# genre:')) {
-          return '# genre: User';
-        }
-        return line;
-      })
-      .join('\n');
-    return {
-      ...item,
-      content: updatedContent,
-    };
-  });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

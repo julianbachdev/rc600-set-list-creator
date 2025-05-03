@@ -1,17 +1,11 @@
-import { useSetListsFinalContext } from '../../contexts/SetListsFinalContext';
 import CreateRc600FilesModal from './CreateRc600FilesModal.jsx';
 import React, { useState } from 'react';
 
 function CreateRc600Files() {
-  const { setListsFinal } = useSetListsFinalContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleCreateRC600Files() {
-    if (setListsFinal.length === 0) {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(true);
-    }
+    setIsModalOpen(true);
   }
 
   function handleModalClose() {

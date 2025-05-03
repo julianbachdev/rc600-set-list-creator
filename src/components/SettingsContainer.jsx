@@ -37,7 +37,7 @@ function PresetSettingsContainer() {
 
   useEffect(() => {
     const selectedSongData = repertoire.find(song => song.name === selectedSong) || {};
-    console.log(selectedSongData);
+
     setSongSettings(prev => ({
       ...prev,
       content: selectedSongData.content || '',

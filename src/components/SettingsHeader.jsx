@@ -8,12 +8,10 @@ function SettingsHeader() {
   const { setSetListsFinal } = useSetListsFinalContext();
 
   function handleLoadSetLists() {
-    console.log('loading set lists data from file');
     loadSetListsDataFromFile(true, 'setLists', setSetLists, 'setListsFinal', setSetListsFinal);
   }
 
   useEffect(() => {
-    console.log('loading set lists data from effect');
     loadSetListsDataFromFile(false, 'setLists', setSetLists, 'setListsFinal', setSetListsFinal);
   }, []);
 
