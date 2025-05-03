@@ -1,7 +1,5 @@
 import { rhythmMenuData, rhythmSettingsDefault } from '../data/rhythmData.js';
-import { u } from 'framer-motion/client';
 
-// NOT USED ANYMORE
 export function extractCapoNumber(str) {
   const parenMatch = str.match(/\(([^)]*)\)/);
   if (!parenMatch) return 0;
