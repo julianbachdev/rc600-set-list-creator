@@ -4,11 +4,11 @@ import {
   saveSetListsDataToFile,
   openFilesFromFolder,
 } from '../utils/dataHelpers.js';
+import CreateRc600Files from './settings/createRc600FilesModal/CreateRc600Files.jsx';
 import { useSetListsFinalContext } from '../contexts/SetListsFinalContext.js';
 import { useSelectedSongContext } from '../contexts/SelectedSongContext.js';
 import { useRepertoireContext } from '../contexts/RepertoireContext.js';
 import { useSetListsContext } from '../contexts/SetListsContext.js';
-import CreateRc600Files from './settings/CreateRc600Files.jsx';
 import { rhythmSettingsDefault } from '../data/rhythmData.js';
 import TimeSignature from './settings/TimeSignature.jsx';
 import React, { useState, useEffect } from 'react';

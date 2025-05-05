@@ -94,10 +94,10 @@ export function removeSongFromSetList(songToRemove, selectedSetList, setSetLists
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function collectDataForRc600(repertoire, setLists, setListsFinal) {
+export function collectDataForRc600(repertoire, setLists, setListsFinal, tuning) {
   const orderedSongNames = getSongsFromSetLists(setLists, setListsFinal);
   const songsData = getSongDataFromSongList(repertoire, orderedSongNames);
-  const songsDataAndValues = filterSongDataValues(songsData, rhythmMenuData);
+  const songsDataAndValues = filterSongDataValues(songsData, rhythmMenuData, tuning);
   return songsDataAndValues;
 }
 
@@ -122,7 +122,7 @@ function getSongDataFromSongList(repertoire, songList) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function filterSongDataValues(songData, rhythmMenuData) {
+function filterSongDataValues(songData, rhythmMenuData, tuning) {
   return songData.map((song, index) => {
     const { key, loop, ...settings } = song.settings || {};
     const newSettings = {};
@@ -136,7 +136,7 @@ function filterSongDataValues(songData, rhythmMenuData) {
     const timeSignatureDefault = 0;
     const genreDefault = 0;
     const patternDefault = 0;
-    const rhythmOnOffDefault = 0;
+    const rhythmDefault = 0;
 
     //Name
     newSettings.name = {
@@ -150,7 +150,7 @@ function filterSongDataValues(songData, rhythmMenuData) {
     // Key True
     newSettings.keyTrue = {
       value: settings.keyTrue,
-      rc600Value: settings.keyTrue ? getKeyTrueValue(settings.keyTrue) : keyTrueDefault,
+      rc600Value: settings.keyTrue ? getKeyTrueValue(settings.keyTrue, tuning) : keyTrueDefault,
     };
 
     // Bpm
@@ -160,9 +160,9 @@ function filterSongDataValues(songData, rhythmMenuData) {
     };
 
     // Rhythm On Off
-    newSettings.rhythmOnOff = {
-      value: settings.rhythmOnOff,
-      rc600Value: settings.rhythmOnOff === 'ON' ? 1 : rhythmOnOffDefault,
+    newSettings.rhythm = {
+      value: settings.rhythm,
+      rc600Value: settings.rhythm === 'ON' ? 1 : rhythmDefault,
     };
 
     // Variation

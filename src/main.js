@@ -24,6 +24,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1500,
     height: 800,
+    icon: path.join(__dirname, 'assets', 'icons', 'icon.png'),
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       devTools: true,
@@ -530,23 +531,24 @@ async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
         if (dataIndex < data.length) {
           const currentData = data[dataIndex];
           dataIndex++;
-
           // Read and modify XML for both versions
           const content = await fs.promises.readFile(memorySource, 'utf-8');
           const modifiedContentA = await modifyMemoryXml(content, currentData, 'A', mem);
           const modifiedContentB = await modifyMemoryXml(content, currentData, 'B', mem);
-
           // Write modified content to both A and B versions
           await fs.promises.writeFile(tempDestA, modifiedContentA, 'utf-8');
           await fs.promises.rename(tempDestA, memoryDestA);
           await fs.promises.writeFile(tempDestB, modifiedContentB, 'utf-8');
           await fs.promises.rename(tempDestB, memoryDestB);
         } else {
-          // No more data, use template directly
-          await fs.promises.copyFile(memorySource, tempDestA);
+          // Read and modify XML for both versions
+          const content = await fs.promises.readFile(memorySource, 'utf-8');
+          const modifiedContentA = await modifyMemoryXml(content, defaultMemoryData, 'A', mem);
+          const modifiedContentB = await modifyMemoryXml(content, defaultMemoryData, 'B', mem);
+          // Write modified content to both A and B versions
+          await fs.promises.writeFile(tempDestA, modifiedContentA, 'utf-8');
           await fs.promises.rename(tempDestA, memoryDestA);
-
-          await fs.promises.copyFile(memorySource, tempDestB);
+          await fs.promises.writeFile(tempDestB, modifiedContentB, 'utf-8');
           await fs.promises.rename(tempDestB, memoryDestB);
         }
       } catch (error) {
@@ -647,7 +649,7 @@ async function modifyMemoryXml(content, currentData, version, mem) {
   );
   modifiedContent = modifiedContent.replace(
     /<RHYTHM>[\s\S]*?<M>\d+<\/M>[\s\S]*?<\/RHYTHM>/g,
-    match => match.replace(/<M>\d+<\/M>/, `<M>${currentData.rhythmOnOff.rc600Value}</M>`)
+    match => match.replace(/<M>\d+<\/M>/, `<M>${currentData.rhythm.rc600Value}</M>`)
   );
 
   // Modify KEY in all TRACKS
@@ -658,3 +660,21 @@ async function modifyMemoryXml(content, currentData, version, mem) {
 
   return modifiedContent;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+const defaultMemoryData = {
+  bpm: { value: 120, rc600Value: 1200 },
+  genre: { value: 'USER', rc600Value: 20 },
+  keyTrue: { value: 'C', rc600Value: 0 },
+  kit: { value: 'BRUSH', rc600Value: 7 },
+  name: {
+    value: 'Empty',
+    rc600Value: [69, 109, 112, 116, 121, 32, 32, 32, 32, 32, 32, 32],
+  },
+  pattern: { value: '__4A_', rc600Value: 5 },
+  rhythm: { value: 'OFF', rc600Value: 0 },
+  timeSignature: { value: '2/4', rc600Value: 0 },
+  variation: { value: 'A', rc600Value: 0 },
+  samplesPerMeasure: { value: 'SAMPLES', rc600Value: 44100 },
+};

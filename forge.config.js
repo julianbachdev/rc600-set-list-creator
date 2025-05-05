@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: 'src/assets/icons/icon',
     extraResource: [
       'src/data/xmlDataTemplate/RHYTHM.RC0',
       'src/data/xmlDataTemplate/SYSTEM1.RC0',
@@ -13,19 +14,28 @@ module.exports = {
       name: '@electron-forge/maker-squirrel',
       config: {
         name: 'rc600_set_list_master',
+        iconUrl: 'src/assets/icons/icon.ico',
+        setupIcon: 'src/assets/icons/icon.ico',
       },
     },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
+      config: {
+        icon: 'src/assets/icons/icon.icns',
+      },
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        icon: 'src/assets/icons/icon.png',
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        icon: 'src/assets/icons/icon.png',
+      },
     },
   ],
   plugins: [

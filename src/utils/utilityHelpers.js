@@ -1,6 +1,7 @@
 import { rhythmMenuData, rhythmSettingsDefault } from '../data/rhythmData.js';
 
 export function extractCapoNumber(str) {
+  if (!str) return 0;
   const parenMatch = str.match(/\(([^)]*)\)/);
   if (!parenMatch) return 0;
   const insideParens = parenMatch[1];
@@ -20,16 +21,30 @@ export function formatSongName(song, showDetails) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function getRelativeMajorKey(key) {
+function getRelativeMajorKey(key, capoNumber) {
+  let relativeMajor;
   const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  if (typeof key === 'string' && key.toLowerCase().includes('min')) {
-    const root = key.replace(/min/i, '').trim();
-    const index = keys.indexOf(root);
-    if (index === -1) return key;
-    return keys[(index + 3) % 12];
+  const noteMatch = key.match(/^[A-G]#?/);
+  const baseNote = noteMatch ? noteMatch[0] : '';
+
+  if (key.toLowerCase().includes('min')) {
+    const index = keys.indexOf(baseNote);
+    if (index === -1) return baseNote;
+    relativeMajor = keys[(index + 3) % 12];
   }
-  return key;
+  if (!key.toLowerCase().includes('min')) {
+    relativeMajor = baseNote;
+  }
+  if (capoNumber > 0) {
+    const index = keys.indexOf(relativeMajor);
+    if (index === -1) return relativeMajor;
+    const newIndex = (index + capoNumber) % 12;
+    relativeMajor = keys[newIndex];
+  }
+  return relativeMajor;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 export function extractMetadataFromContent(song) {
   const songName = song?.name ?? '';
@@ -59,11 +74,15 @@ export function extractMetadataFromContent(song) {
     const isValidNote = /^[A-G]/.test(upperFirst);
     parsed.key = isValidNote ? upperFirst : rhythmSettingsDefault.key;
   }
+
   if ('keyTrue' in parsed) {
     const upperFirst = parsed.keyTrue.charAt(0).toUpperCase() + parsed.keyTrue.slice(1);
     const isValidNote = /^[A-G]/.test(upperFirst);
-    parsed.keyTrue = isValidNote ? upperFirst : getRelativeMajorKey(parsed.key);
+    parsed.keyTrue = isValidNote
+      ? getRelativeMajorKey(upperFirst, extractCapoNumber(parsed.key))
+      : getRelativeMajorKey(parsed.key, extractCapoNumber(parsed.key));
   }
+
   if ('kit' in parsed) {
     const validKits = rhythmMenuData[0].kit.map(item => item.name.toUpperCase());
     const kitValue = parsed.kit.toUpperCase();

@@ -2,28 +2,32 @@ import {
   selectPath,
   createRc600FolderStructure,
   populateRc600Folders,
-} from '../../utils/dataHelpers';
-import { useSetListsFinalContext } from '../../contexts/SetListsFinalContext';
-import { useRepertoireContext } from '../../contexts/RepertoireContext';
-import { useSetListsContext } from '../../contexts/SetListsContext';
-import { collectDataForRc600 } from '../../utils/setListHelpers';
-import { truncatePathToFit } from '../../utils/utilityHelpers';
-import { isValidFolderName } from '../../utils/utilityHelpers';
+} from '../../../utils/dataHelpers.js';
+import { useSetListsFinalContext } from '../../../contexts/SetListsFinalContext.js';
+import { useRepertoireContext } from '../../../contexts/RepertoireContext.js';
+import { useSetListsContext } from '../../../contexts/SetListsContext.js';
+import { collectDataForRc600 } from '../../../utils/setListHelpers.js';
+import { truncatePathToFit } from '../../../utils/utilityHelpers.js';
+import { isValidFolderName } from '../../../utils/utilityHelpers.js';
 import React, { useState, useRef, useEffect } from 'react';
+import CreateRc600TuningModal from './Tuning.jsx';
+import CreateRc600ErrorModal from './Error.jsx';
+import CreateRc600FinalModal from './Final.jsx';
 
-function CreateRc600FilesModal({ isOpen, onClose }) {
-  const { repertoire } = useRepertoireContext();
+export default function Files({ isOpen, onClose }) {
   const { setLists } = useSetListsContext();
+  const { repertoire } = useRepertoireContext();
   const { setListsFinal } = useSetListsFinalContext();
+  const [error, setError] = useState('');
+  const [tuning, setTuning] = useState(0);
   const [folderName, setFolderName] = useState('');
   const [selectedPath, setSelectedPath] = useState('');
-  const [error, setError] = useState('');
   const [displayedPath, setDisplayedPath] = useState('');
-  const pathRef = useRef(null);
+  const [selectedTuning, setSelectedTuning] = useState(true);
   const [operationStatus, setOperationStatus] = useState(null);
+  const pathRef = useRef(null);
 
   const isSetListsFinalEmpty = !setListsFinal || setListsFinal.length === 0;
-  const data = collectDataForRc600(repertoire, setLists, setListsFinal);
 
   function handleFolderNameChange(e) {
     setFolderName(e.target.value);
@@ -60,6 +64,7 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
         setOperationStatus('error');
         return;
       }
+      const data = collectDataForRc600(repertoire, setLists, setListsFinal, tuning);
       const [success, error] = await populateRc600Folders(folderName, selectedPath, data);
       if (success) {
         setOperationStatus('success');
@@ -89,46 +94,31 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
       setSelectedPath('');
       setError('');
       setOperationStatus(null);
+      setSelectedTuning(true);
+      setTuning(0);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
-
   if (operationStatus === 'success' || operationStatus === 'error') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="flex w-96 flex-col items-center rounded-lg bg-white p-6">
-          <div className="mb-6 text-center text-lg font-semibold">
-            {operationStatus === 'success'
-              ? 'RC600 files were successfully created!'
-              : `Failed to create RC600 files: ${error}`}
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+      <CreateRc600FinalModal operationStatus={operationStatus} error={error} onClose={onClose} />
     );
   }
+  // if (
+  //   isSetListsFinalEmpty ||
+  //   collectDataForRc600(repertoire, setLists, setListsFinal, tuning).length === 0
+  // ) {
+  //   return <CreateRc600ErrorModal onClose={onClose} />;
+  // }
 
-  if (isSetListsFinalEmpty || data.length === 0) {
+  if (selectedTuning) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="flex w-96 flex-col items-center rounded-lg bg-white p-6">
-          <div className="mb-6 text-center text-lg font-semibold">
-            You have not added any Set Lists/Songs to Set Lists Final.
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-          >
-            Close
-          </button>
-        </div>
-      </div>
+      <CreateRc600TuningModal
+        onClose={onClose}
+        setSelectedTuning={setSelectedTuning}
+        setTuning={setTuning}
+      />
     );
   }
 
@@ -191,5 +181,3 @@ function CreateRc600FilesModal({ isOpen, onClose }) {
     </div>
   );
 }
-
-export default CreateRc600FilesModal;

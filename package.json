@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Create set lists and save it to the RC600",
   "main": ".webpack/main",
+  "icon": "src/assets/icons/icon.png",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",

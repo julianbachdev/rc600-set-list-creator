@@ -58,11 +58,13 @@ export function getKits() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function getKeyTrueValue(key) {
-  const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  const normalized = key.replace(/min/i, '').trim().toUpperCase();
-  const index = keys.indexOf(normalized);
-  return index !== -1 ? index : 0;
+export function getKeyTrueValue(keyTrue, tuning) {
+  const rc600keyOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const index = rc600keyOrder.indexOf(keyTrue);
+  if (index === -1) return 0;
+  let newIndex = (index + tuning) % 12;
+  if (newIndex < 0) newIndex += 12;
+  return newIndex;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

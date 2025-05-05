@@ -1,7 +1,7 @@
-import CreateRc600FilesModal from './CreateRc600FilesModal.jsx';
+import CreateRc600FilesModal from './Files.jsx';
 import React, { useState } from 'react';
 
-function CreateRc600Files() {
+export default function Files() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleCreateRC600Files() {
@@ -21,5 +21,3 @@ function CreateRc600Files() {
     </>
   );
 }
-
-export default CreateRc600Files;
