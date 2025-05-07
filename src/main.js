@@ -488,24 +488,33 @@ async function handleCopyRhythmFile(xmlDataTemplateFolder, dataFolder) {
 async function handleCopySystemFiles(xmlDataTemplateFolder, dataFolder) {
   const systemSource = path.join(xmlDataTemplateFolder, 'SYSTEM1.RC0');
   const system1Dest = path.join(dataFolder, 'SYSTEM1.RCO');
-
-  try {
-    await fs.promises.copyFile(systemSource, system1Dest);
-  } catch (error) {
-    throw new Error(`Failed to copy SYSTEM1.RCO: ${error.message}`);
-  }
-
-  const system2Dest = path.join(dataFolder, 'SYSTEM2.RCO');
-  const tempDest = path.join(dataFolder, 'SYSTEM2.tmp');
+  const tempDest1 = path.join(dataFolder, 'SYSTEM1.tmp');
 
   try {
     const content = await fs.promises.readFile(systemSource, 'utf-8');
-    const modifiedContent = content.replace(/<count>0001<\/count>/, '<count>0002</count>');
-    await fs.promises.writeFile(tempDest, modifiedContent, 'utf-8');
-    await fs.promises.rename(tempDest, system2Dest);
+    const modifiedContent1 = content.replace(/(<count>)\d+(<\/count>)/, '$10003$2'); // THIS IS WHERE WE SET THE COUNT TO 0003
+    await fs.promises.writeFile(tempDest1, modifiedContent1, 'utf-8');
+    await fs.promises.rename(tempDest1, system1Dest);
   } catch (error) {
     try {
-      await fs.promises.unlink(tempDest).catch(() => {});
+      await fs.promises.unlink(tempDest1).catch(() => {});
+    } catch (cleanupError) {
+      console.error('Failed to clean up temporary file:', cleanupError);
+    }
+    throw new Error(`Failed to create SYSTEM1.RCO: ${error.message}`);
+  }
+
+  const system2Dest = path.join(dataFolder, 'SYSTEM2.RCO');
+  const tempDest2 = path.join(dataFolder, 'SYSTEM2.tmp');
+
+  try {
+    const content = await fs.promises.readFile(systemSource, 'utf-8');
+    const modifiedContent2 = content.replace(/(<count>)\d+(<\/count>)/, '$10002$2'); // THIS IS WHERE WE SET THE COUNT TO 0002
+    await fs.promises.writeFile(tempDest2, modifiedContent2, 'utf-8');
+    await fs.promises.rename(tempDest2, system2Dest);
+  } catch (error) {
+    try {
+      await fs.promises.unlink(tempDest2).catch(() => {});
     } catch (cleanupError) {
       console.error('Failed to clean up temporary file:', cleanupError);
     }
