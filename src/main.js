@@ -715,22 +715,26 @@ async function handleCopyWaveFiles(xmlDataTemplateFolder, waveFolder, data) {
           const currentData = data[dataIndex];
           dataIndex++;
           const timeSignature = currentData.timeSignature.value;
-          const timeSignatureMap = {
-            '2/4': 0,
-            '3/4': 1,
-            '4/4': 2,
-            '5/8': 3,
-            '7/8': 4,
-            '9/8': 5,
-          };
-          const sourceIndex = timeSignatureMap[timeSignature];
-          if (sourceIndex !== undefined) {
-            const wavSource = waveSources[sourceIndex];
-            const targetFolder = path.join(waveFolder, `${memoryNumber}_6`);
-            const targetFileName = `${memoryNumber}_6.WAV`;
-            const targetPath = path.join(targetFolder, targetFileName);
-            await fs.promises.mkdir(targetFolder, { recursive: true });
-            await fs.promises.copyFile(wavSource, targetPath);
+          const rhythmOnOff = currentData.rhythm.value;
+
+          if (rhythmOnOff === 'ON') {
+            const timeSignatureMap = {
+              '2/4': 0,
+              '3/4': 1,
+              '4/4': 2,
+              '5/8': 3,
+              '7/8': 4,
+              '9/8': 5,
+            };
+            const sourceIndex = timeSignatureMap[timeSignature];
+            if (sourceIndex !== undefined) {
+              const wavSource = waveSources[sourceIndex];
+              const targetFolder = path.join(waveFolder, `${memoryNumber}_6`);
+              const targetFileName = `${memoryNumber}_6.WAV`;
+              const targetPath = path.join(targetFolder, targetFileName);
+              await fs.promises.mkdir(targetFolder, { recursive: true });
+              await fs.promises.copyFile(wavSource, targetPath);
+            }
           }
         }
       } catch (error) {
