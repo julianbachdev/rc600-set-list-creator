@@ -94,20 +94,7 @@ ipcMain.handle('open-files-from-folder', async () => {
     folderPath = result.filePaths[0];
   }
   store.set('folderPath', folderPath);
-  const filesWithContent = await Promise.all(
-    fs
-      .readdirSync(folderPath)
-      .filter(file => file.endsWith('.txt'))
-      .map(async file => {
-        const filePath = path.join(folderPath, file);
-        const content = await fs.promises.readFile(filePath, 'utf-8');
-        return {
-          name: file,
-          path: filePath,
-          content: content,
-        };
-      })
-  );
+  const filesWithContent = await getTxtFilesWithContent(folderPath);
   return filesWithContent;
 });
 
@@ -124,20 +111,7 @@ ipcMain.handle('refresh-files-from-folder', async () => {
     folderPath = result.filePaths[0];
     store.set('folderPath', folderPath);
   }
-  const filesWithContent = await Promise.all(
-    fs
-      .readdirSync(folderPath)
-      .filter(file => file.endsWith('.txt'))
-      .map(async file => {
-        const filePath = path.join(folderPath, file);
-        const content = await fs.promises.readFile(filePath, 'utf-8');
-        return {
-          name: file,
-          path: filePath,
-          content: content,
-        };
-      })
-  );
+  const filesWithContent = await getTxtFilesWithContent(folderPath);
   return filesWithContent;
 });
 
@@ -333,29 +307,25 @@ ipcMain.handle('open-folder-dialog', async () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 ipcMain.handle('create-rc600-folder-structure', async (event, { basePath, folderName }) => {
   try {
     const mainFolder = path.join(basePath, folderName);
-
     // Check if folder already exists
     if (fs.existsSync(mainFolder)) {
-      return { success: false, message: 'Folder name already exists' };
+      return [false, 'Folder name already exists'];
     }
-
     const waveFolder = path.join(mainFolder, 'WAVE');
     const dataFolder = path.join(mainFolder, 'DATA');
-
     // Create main folder
     await fs.promises.mkdir(mainFolder, { recursive: true });
-
     // Create WAVE and DATA folders
     await fs.promises.mkdir(waveFolder, { recursive: true });
     await fs.promises.mkdir(dataFolder, { recursive: true });
-
     // Create TEMP folder inside WAVE
     await fs.promises.mkdir(path.join(waveFolder, 'TEMP'), { recursive: true });
-
     // Create numbered folders (001_1 to 099_6)
     for (let i = 1; i <= 99; i++) {
       const prefix = i.toString().padStart(3, '0');
@@ -364,44 +334,81 @@ ipcMain.handle('create-rc600-folder-structure', async (event, { basePath, folder
         await fs.promises.mkdir(path.join(waveFolder, folderName), { recursive: true });
       }
     }
-
-    return { success: true, message: 'RC600 folder structure created successfully' };
+    // Verify the entire structure was created correctly
+    const verificationResult = await verifyRc600FolderStructure(basePath, folderName);
+    if (!verificationResult[0]) {
+      return verificationResult;
+    }
+    return [true, null];
   } catch (error) {
     console.error('Error creating RC600 folder structure:', error);
-    return { success: false, message: `Error creating folders: ${error.message}` };
+    return [false, `Error creating folders: ${error.message}`];
   }
 });
 
 ////////////////////////////////////////////////////////////////////////////////
 
 ipcMain.handle('populate-rc600-folders', async (event, { folderName, selectedPath, data }) => {
-  const verificationResult = await verifyRc600FolderStructure(selectedPath, folderName);
-  if (!verificationResult.success) {
-    return verificationResult;
-  }
-
   let xmlDataTemplateFolder;
   if (process.env.NODE_ENV === 'development') {
     xmlDataTemplateFolder = path.join(app.getAppPath(), 'src', 'data', 'xmlDataTemplate');
   } else {
     xmlDataTemplateFolder = process.resourcesPath;
   }
-
   const dataFolder = path.join(selectedPath, folderName, 'DATA');
   const waveFolder = path.join(selectedPath, folderName, 'WAVE');
 
   try {
     await handleCopyRhythmFile(xmlDataTemplateFolder, dataFolder);
-    await handleCopySystemFiles(xmlDataTemplateFolder, dataFolder);
-    await handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data);
   } catch (error) {
-    throw new Error(`Failed to copy files: ${error.message}`);
+    return [false, `Failed to copy rhythm file: ${error.message}`];
   }
 
-  return {
-    success: true,
-    message: 'Successfully copied all files to DATA folder',
-  };
+  try {
+    await handleCopySystemFiles(xmlDataTemplateFolder, dataFolder);
+  } catch (error) {
+    return [false, `Failed to copy system files: ${error.message}`];
+  }
+
+  try {
+    await handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data);
+  } catch (error) {
+    return [false, `Failed to copy memory files: ${error.message}`];
+  }
+
+  try {
+    await handleCopyWaveFiles(xmlDataTemplateFolder, waveFolder, data);
+  } catch (error) {
+    return [false, `Failed to copy wave files: ${error.message}`];
+  }
+
+  return [true, null];
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+ipcMain.handle('delete-rc600-folder-structure', async (event, { basePath, folderName }) => {
+  try {
+    const mainFolder = path.join(basePath, folderName);
+
+    // Check if folder exists
+    if (!fs.existsSync(mainFolder)) {
+      return [false, 'Folder does not exist'];
+    }
+
+    // Delete the entire folder structure recursively
+    await fs.promises.rm(mainFolder, { recursive: true, force: true });
+
+    // Verify the folder was deleted
+    if (fs.existsSync(mainFolder)) {
+      return [false, 'Failed to delete folder structure'];
+    }
+
+    return [true, null];
+  } catch (error) {
+    console.error('Error deleting RC600 folder structure:', error);
+    return [false, `Error deleting folder structure: ${error.message}`];
+  }
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -411,7 +418,7 @@ ipcMain.handle('populate-rc600-folders', async (event, { folderName, selectedPat
 ////////////////////////////////////////////////////////////////////////////////
 
 function handleAppExit(e) {
-  e.preventDefault();
+  if (e && e.preventDefault) e.preventDefault();
   if (!dataSaved) {
     const response = dialog.showMessageBoxSync({
       type: 'question',
@@ -437,36 +444,30 @@ async function verifyRc600FolderStructure(basePath, folderName) {
     const waveFolder = path.join(mainFolder, 'WAVE');
     const tempFolder = path.join(waveFolder, 'TEMP');
     if (!fs.existsSync(mainFolder)) {
-      throw new Error('Main folder does not exist');
+      return [false, 'Main folder does not exist'];
     }
     if (!fs.existsSync(dataFolder)) {
-      throw new Error('DATA folder does not exist');
+      return [false, 'DATA folder does not exist'];
     }
     if (!fs.existsSync(waveFolder)) {
-      throw new Error('WAVE folder does not exist');
+      return [false, 'WAVE folder does not exist'];
     }
     if (!fs.existsSync(tempFolder)) {
-      throw new Error('TEMP folder does not exist inside WAVE folder');
+      return [false, 'TEMP folder does not exist inside WAVE folder'];
     }
     for (let i = 1; i <= 99; i++) {
       const prefix = i.toString().padStart(3, '0');
       for (let j = 1; j <= 6; j++) {
         const numberedFolder = path.join(waveFolder, `${prefix}_${j}`);
         if (!fs.existsSync(numberedFolder)) {
-          throw new Error(`Folder ${prefix}_${j} does not exist inside WAVE folder`);
+          return [false, `Folder ${prefix}_${j} does not exist inside WAVE folder`];
         }
       }
     }
-    return {
-      success: true,
-      message: 'RC600 folder structure verified successfully',
-    };
+    return [true, null];
   } catch (error) {
     console.error('Error verifying RC600 folder structure:', error);
-    return {
-      success: false,
-      message: `Failed to verify folder structure: ${error.message}`,
-    };
+    return [false, `Failed to verify folder structure: ${error.message}`];
   }
 }
 
@@ -515,13 +516,29 @@ async function handleCopySystemFiles(xmlDataTemplateFolder, dataFolder) {
 ////////////////////////////////////////////////////////////////////////////////
 
 async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
-  const memorySource = path.join(xmlDataTemplateFolder, 'MEMORY001A.RC0');
+  const memory0_0Source = path.join(xmlDataTemplateFolder, '0_0', '000000000A.RC0');
+  const memory2_4Source = path.join(xmlDataTemplateFolder, '2_4', '222222222A.RC0');
+  const memory3_4Source = path.join(xmlDataTemplateFolder, '3_4', '333333333A.RC0');
+  const memory4_4Source = path.join(xmlDataTemplateFolder, '4_4', '444444444A.RC0');
+  const memory5_8Source = path.join(xmlDataTemplateFolder, '5_8', '555555555A.RC0');
+  const memory7_8Source = path.join(xmlDataTemplateFolder, '7_8', '777777777A.RC0');
+  const memory9_8Source = path.join(xmlDataTemplateFolder, '9_8', '999999999A.RC0');
+
+  const memorySources = [
+    memory0_0Source,
+    memory2_4Source,
+    memory3_4Source,
+    memory4_4Source,
+    memory5_8Source,
+    memory7_8Source,
+    memory9_8Source,
+  ];
+
   let dataIndex = 0;
 
   try {
     for (let mem = 1; mem <= 99; mem++) {
       const memoryNumber = mem.toString().padStart(3, '0');
-
       const memoryDestA = path.join(dataFolder, `MEMORY${memoryNumber}A.RCO`);
       const tempDestA = path.join(dataFolder, `MEMORY${memoryNumber}A.tmp`);
       const memoryDestB = path.join(dataFolder, `MEMORY${memoryNumber}B.RCO`);
@@ -531,6 +548,26 @@ async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
         if (dataIndex < data.length) {
           const currentData = data[dataIndex];
           dataIndex++;
+
+          const timeSignature = currentData.timeSignature.value;
+          const rhythmOnOff = currentData.rhythm.value;
+          const timeSignatureMap = {
+            '2/4': 1,
+            '3/4': 2,
+            '4/4': 3,
+            '5/8': 4,
+            '7/8': 5,
+            '9/8': 6,
+          };
+          const sourceIndex = timeSignatureMap[timeSignature] || 0;
+          let memorySource;
+
+          if (rhythmOnOff === 'ON') {
+            memorySource = memorySources[sourceIndex];
+          } else {
+            memorySource = memorySources[0];
+          }
+
           // Read and modify XML for both versions
           const content = await fs.promises.readFile(memorySource, 'utf-8');
           const modifiedContentA = await modifyMemoryXml(content, currentData, 'A', mem);
@@ -542,7 +579,7 @@ async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
           await fs.promises.rename(tempDestB, memoryDestB);
         } else {
           // Read and modify XML for both versions
-          const content = await fs.promises.readFile(memorySource, 'utf-8');
+          const content = await fs.promises.readFile(memorySources[0], 'utf-8');
           const modifiedContentA = await modifyMemoryXml(content, defaultMemoryData, 'A', mem);
           const modifiedContentB = await modifyMemoryXml(content, defaultMemoryData, 'B', mem);
           // Write modified content to both A and B versions
@@ -576,15 +613,13 @@ async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
 async function modifyMemoryXml(content, currentData, version, mem) {
   let modifiedContent = content;
 
-  // Modify count based on version
+  // Modify COUNT based on version
   const countValue = version === 'A' ? '0001' : '0002';
   modifiedContent = modifiedContent.replace(/<count>\d+<\/count>/g, `<count>${countValue}</count>`);
-
-  // Update the three tags with zero-based memory number
+  // Update the ID TAGS with zero-based memory number
   modifiedContent = modifiedContent.replace(/<mem id="\d+">/g, `<mem id="${mem - 1}">`);
   modifiedContent = modifiedContent.replace(/<ifx id="\d+">/g, `<ifx id="${mem - 1}">`);
   modifiedContent = modifiedContent.replace(/<tfx id="\d+">/g, `<tfx id="${mem - 1}">`);
-
   // Modify NAME (ASCII values)
   const nameLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
   currentData.name.rc600Value.forEach((asciiValue, index) => {
@@ -600,33 +635,35 @@ async function modifyMemoryXml(content, currentData, version, mem) {
         )
     );
   });
+  // Modify KEY in all TRACKS
+  modifiedContent = modifiedContent.replace(
+    /<AB_HARMONIST_MANUAL>[\s\S]*?<D>\d+<\/D>[\s\S]*?<\/AB_HARMONIST_MANUAL>/g,
+    match => match.replace(/<D>\d+<\/D>/, `<D>${currentData.keyTrue.rc600Value}</D>`)
+  );
+  // Modify Rhythm On Off setting
+  modifiedContent = modifiedContent.replace(
+    /<RHYTHM>[\s\S]*?<M>\d+<\/M>[\s\S]*?<\/RHYTHM>/g,
+    match => match.replace(/<M>\d+<\/M>/, `<M>${currentData.rhythm.rc600Value}</M>`)
+  );
 
-  // Modify BPM in all TRACKS and MASTER
-  const tracks = ['TRACK1', 'TRACK2', 'TRACK3', 'TRACK4', 'TRACK5', 'TRACK6'];
-  tracks.forEach(track => {
-    modifiedContent = modifiedContent.replace(
-      new RegExp(`<${track}>[\\s\\S]*?<U>\\d+</U>[\\s\\S]*?</${track}>`, 'g'),
-      match => match.replace(/<U>\d+<\/U>/, `<U>${currentData.bpm.rc600Value}</U>`)
-    );
-  });
+  if (currentData.rhythm.value === 'OFF') {
+    return modifiedContent;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+
+  // Modify BPM in MASTER
   modifiedContent = modifiedContent.replace(
     /<MASTER>[\s\S]*?<A>\d+<\/A>[\s\S]*?<\/MASTER>/g,
     match => match.replace(/<A>\d+<\/A>/, `<A>${currentData.bpm.rc600Value}</A>`)
   );
-
-  // Modify samplesPerMeasure in all TRACKS and MASTER
-  tracks.forEach(track => {
-    modifiedContent = modifiedContent.replace(
-      new RegExp(`<${track}>[\\s\\S]*?<V>\\d+</V>[\\s\\S]*?</${track}>`, 'g'),
-      match => match.replace(/<V>\d+<\/V>/, `<V>${currentData.samplesPerMeasure.rc600Value}</V>`)
-    );
-  });
+  // Modify samplesPerMeasure in MASTER
   modifiedContent = modifiedContent.replace(
     /<MASTER>[\s\S]*?<B>\d+<\/B>[\s\S]*?<\/MASTER>/g,
     match => match.replace(/<B>\d+<\/B>/, `<B>${currentData.samplesPerMeasure.rc600Value}</B>`)
   );
 
-  // Modify RHYTHM settings
+  // Modify other RHYTHM settings
   modifiedContent = modifiedContent.replace(
     /<RHYTHM>[\s\S]*?<A>\d+<\/A>[\s\S]*?<\/RHYTHM>/g,
     match => match.replace(/<A>\d+<\/A>/, `<A>${currentData.genre.rc600Value}</A>`)
@@ -647,18 +684,77 @@ async function modifyMemoryXml(content, currentData, version, mem) {
     /<RHYTHM>[\s\S]*?<F>\d+<\/F>[\s\S]*?<\/RHYTHM>/g,
     match => match.replace(/<F>\d+<\/F>/, `<F>${currentData.timeSignature.rc600Value}</F>`)
   );
-  modifiedContent = modifiedContent.replace(
-    /<RHYTHM>[\s\S]*?<M>\d+<\/M>[\s\S]*?<\/RHYTHM>/g,
-    match => match.replace(/<M>\d+<\/M>/, `<M>${currentData.rhythm.rc600Value}</M>`)
-  );
-
-  // Modify KEY in all TRACKS
-  modifiedContent = modifiedContent.replace(
-    /<AB_HARMONIST_MANUAL>[\s\S]*?<D>\d+<\/D>[\s\S]*?<\/AB_HARMONIST_MANUAL>/g,
-    match => match.replace(/<D>\d+<\/D>/, `<D>${currentData.keyTrue.rc600Value}</D>`)
-  );
 
   return modifiedContent;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+async function handleCopyWaveFiles(xmlDataTemplateFolder, waveFolder, data) {
+  const wave2_4Source = path.join(xmlDataTemplateFolder, '2_4', '222_2.WAV');
+  const wave3_4Source = path.join(xmlDataTemplateFolder, '3_4', '333_3.WAV');
+  const wave4_4Source = path.join(xmlDataTemplateFolder, '4_4', '444_4.WAV');
+  const wave5_8Source = path.join(xmlDataTemplateFolder, '5_8', '555_5.WAV');
+  const wave7_8Source = path.join(xmlDataTemplateFolder, '7_8', '777_7.WAV');
+  const wave9_8Source = path.join(xmlDataTemplateFolder, '9_8', '999_9.WAV');
+  const waveSources = [
+    wave2_4Source,
+    wave3_4Source,
+    wave4_4Source,
+    wave5_8Source,
+    wave7_8Source,
+    wave9_8Source,
+  ];
+
+  let dataIndex = 0;
+  try {
+    for (let mem = 1; mem <= 99; mem++) {
+      const memoryNumber = mem.toString().padStart(3, '0');
+
+      try {
+        if (dataIndex < data.length) {
+          const currentData = data[dataIndex];
+          dataIndex++;
+          const timeSignature = currentData.timeSignature.value;
+          const timeSignatureMap = {
+            '2/4': 0,
+            '3/4': 1,
+            '4/4': 2,
+            '5/8': 3,
+            '7/8': 4,
+            '9/8': 5,
+          };
+          const sourceIndex = timeSignatureMap[timeSignature];
+          if (sourceIndex !== undefined) {
+            const wavSource = waveSources[sourceIndex];
+            const targetFolder = path.join(waveFolder, `${memoryNumber}_6`);
+            const targetFileName = `${memoryNumber}_6.WAV`;
+            const targetPath = path.join(targetFolder, targetFileName);
+            await fs.promises.mkdir(targetFolder, { recursive: true });
+            await fs.promises.copyFile(wavSource, targetPath);
+          }
+        }
+      } catch (error) {
+        throw new Error(`Failed to copy WAV file for MEMORY${memoryNumber}: ${error.message}`);
+      }
+    }
+  } catch (error) {
+    throw new Error(`Failed to process WAV files: ${error.message}`);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+async function getTxtFilesWithContent(folderPath) {
+  return Promise.all(
+    fs
+      .readdirSync(folderPath)
+      .filter(file => file.endsWith('.txt'))
+      .map(async file => {
+        const filePath = path.join(folderPath, file);
+        const content = await fs.promises.readFile(filePath, 'utf-8');
+        return { name: file, path: filePath, content };
+      })
+  );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -678,3 +774,5 @@ const defaultMemoryData = {
   variation: { value: 'A', rc600Value: 0 },
   samplesPerMeasure: { value: 'SAMPLES', rc600Value: 44100 },
 };
+
+////////////////////////////////////////////////////////////////////////////////

@@ -43,13 +43,14 @@ export async function openFilesFromFolder(setRepertoire) {
     .catch(error => console.error('Error opening folder:', error));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 export async function openFilesFromFolderWithDialog(setRepertoire) {
   const [path, error] = await selectPath();
   if (error) {
     console.error('Error selecting path:', error);
     return;
   }
-
   window.electron.ipcRenderer
     .invoke('open-files-from-folder', path)
     .then(files => {
@@ -78,7 +79,6 @@ export function overWriteTextFile(song, overwrite) {
       : "You're about to create a new version of your file"
   );
   if (!confirmed || !song.name) return;
-
   window.electron.ipcRenderer
     .invoke('overwrite-text-file', song, overwrite)
     .then(result => {
@@ -120,11 +120,7 @@ export async function createRc600FolderStructure(basePath, folderName) {
       basePath,
       folderName,
     });
-    if (result.success) {
-      return [true, ''];
-    } else {
-      return [false, result.message];
-    }
+    return result;
   } catch (error) {
     return [false, `Error creating RC600 folder structure: ${error.message}`];
   }
@@ -133,14 +129,34 @@ export async function createRc600FolderStructure(basePath, folderName) {
 ////////////////////////////////////////////////////////////////////////////////
 
 export async function populateRc600Folders(folderName, selectedPath, data) {
-  const result = await window.electron.ipcRenderer.invoke('populate-rc600-folders', {
-    folderName,
-    selectedPath,
-    data,
-  });
-  if (result.success) {
-    return [true, ''];
-  } else {
-    return [false, result.message];
+  try {
+    const result = await window.electron.ipcRenderer.invoke('populate-rc600-folders', {
+      folderName,
+      selectedPath,
+      data,
+    });
+    return result;
+  } catch (error) {
+    return [false, `Error populating RC600 folders: ${error.message}`];
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+export async function deleteFoldersOnError(
+  errorMessage,
+  selectedPath,
+  folderName,
+  setError,
+  setOperationStatus
+) {
+  const [deleteSuccess, deleteError] = await window.electron.ipcRenderer.invoke(
+    'delete-rc600-folder-structure',
+    { basePath: selectedPath, folderName }
+  );
+  if (!deleteSuccess) {
+    console.error('Failed to clean up folder structure:', deleteError);
+  }
+  setError(errorMessage);
+  setOperationStatus('error');
 }

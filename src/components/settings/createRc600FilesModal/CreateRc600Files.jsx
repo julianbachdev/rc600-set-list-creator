@@ -1,4 +1,4 @@
-import CreateRc600FilesModal from './Files.jsx';
+import ModalMain from './ModalMain.jsx';
 import React, { useState } from 'react';
 
 export default function Files() {
@@ -17,7 +17,7 @@ export default function Files() {
       <button className="btn-red w-full truncate py-2" onClick={handleCreateRC600Files}>
         CREATE RC600 FILES
       </button>
-      <CreateRc600FilesModal isOpen={isModalOpen} onClose={handleModalClose} />
+      <ModalMain isOpen={isModalOpen} onClose={handleModalClose} />
     </>
   );
 }

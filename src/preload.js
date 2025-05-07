@@ -15,5 +15,7 @@ contextBridge.exposeInMainWorld('electron', {
     populateRc600Folders: (folderName, selectedPath, data) =>
       ipcRenderer.invoke('populate-rc600-folders', { folderName, selectedPath, data }),
     setDataSaved: () => ipcRenderer.send('data-is-saved'),
+    deleteRc600FolderStructure: (folderName, selectedPath) =>
+      ipcRenderer.invoke('delete-rc600-folder-structure', { folderName, selectedPath }),
   },
 });
