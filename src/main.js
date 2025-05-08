@@ -475,11 +475,11 @@ async function verifyRc600FolderStructure(basePath, folderName) {
 
 async function handleCopyRhythmFile(xmlDataTemplateFolder, dataFolder) {
   const rhythmSource = path.join(xmlDataTemplateFolder, 'RHYTHM.RC0');
-  const rhythmDest = path.join(dataFolder, 'RHYTHM.RCO');
+  const rhythmDest = path.join(dataFolder, 'RHYTHM.RC0');
   try {
     await fs.promises.copyFile(rhythmSource, rhythmDest);
   } catch (error) {
-    throw new Error(`Failed to copy RHYTHM.RCO: ${error.message}`);
+    throw new Error(`Failed to copy RHYTHM.RC0: ${error.message}`);
   }
 }
 
@@ -487,12 +487,12 @@ async function handleCopyRhythmFile(xmlDataTemplateFolder, dataFolder) {
 
 async function handleCopySystemFiles(xmlDataTemplateFolder, dataFolder) {
   const systemSource = path.join(xmlDataTemplateFolder, 'SYSTEM1.RC0');
-  const system1Dest = path.join(dataFolder, 'SYSTEM1.RCO');
+  const system1Dest = path.join(dataFolder, 'SYSTEM1.RC0');
   const tempDest1 = path.join(dataFolder, 'SYSTEM1.tmp');
 
   try {
     const content = await fs.promises.readFile(systemSource, 'utf-8');
-    const modifiedContent1 = content.replace(/(<count>)\d+(<\/count>)/, '$10003$2'); // THIS IS WHERE WE SET THE COUNT TO 0003
+    const modifiedContent1 = content.replace(/(<count>)\d+(<\/count>)/, '$10001$2'); // THIS IS WHERE WE SET THE COUNT TO 000X
     await fs.promises.writeFile(tempDest1, modifiedContent1, 'utf-8');
     await fs.promises.rename(tempDest1, system1Dest);
   } catch (error) {
@@ -501,15 +501,15 @@ async function handleCopySystemFiles(xmlDataTemplateFolder, dataFolder) {
     } catch (cleanupError) {
       console.error('Failed to clean up temporary file:', cleanupError);
     }
-    throw new Error(`Failed to create SYSTEM1.RCO: ${error.message}`);
+    throw new Error(`Failed to create SYSTEM1.RC0: ${error.message}`);
   }
 
-  const system2Dest = path.join(dataFolder, 'SYSTEM2.RCO');
+  const system2Dest = path.join(dataFolder, 'SYSTEM2.RC0');
   const tempDest2 = path.join(dataFolder, 'SYSTEM2.tmp');
 
   try {
     const content = await fs.promises.readFile(systemSource, 'utf-8');
-    const modifiedContent2 = content.replace(/(<count>)\d+(<\/count>)/, '$10002$2'); // THIS IS WHERE WE SET THE COUNT TO 0002
+    const modifiedContent2 = content.replace(/(<count>)\d+(<\/count>)/, '$10002$2'); // THIS IS WHERE WE SET THE COUNT TO 000X
     await fs.promises.writeFile(tempDest2, modifiedContent2, 'utf-8');
     await fs.promises.rename(tempDest2, system2Dest);
   } catch (error) {
@@ -518,7 +518,7 @@ async function handleCopySystemFiles(xmlDataTemplateFolder, dataFolder) {
     } catch (cleanupError) {
       console.error('Failed to clean up temporary file:', cleanupError);
     }
-    throw new Error(`Failed to create SYSTEM2.RCO: ${error.message}`);
+    throw new Error(`Failed to create SYSTEM2.RC0: ${error.message}`);
   }
 }
 
@@ -548,9 +548,9 @@ async function handleCopyMemoryFiles(xmlDataTemplateFolder, dataFolder, data) {
   try {
     for (let mem = 1; mem <= 99; mem++) {
       const memoryNumber = mem.toString().padStart(3, '0');
-      const memoryDestA = path.join(dataFolder, `MEMORY${memoryNumber}A.RCO`);
+      const memoryDestA = path.join(dataFolder, `MEMORY${memoryNumber}A.RC0`);
       const tempDestA = path.join(dataFolder, `MEMORY${memoryNumber}A.tmp`);
-      const memoryDestB = path.join(dataFolder, `MEMORY${memoryNumber}B.RCO`);
+      const memoryDestB = path.join(dataFolder, `MEMORY${memoryNumber}B.RC0`);
       const tempDestB = path.join(dataFolder, `MEMORY${memoryNumber}B.tmp`);
 
       try {
