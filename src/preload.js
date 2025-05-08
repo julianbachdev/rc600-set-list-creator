@@ -17,5 +17,6 @@ contextBridge.exposeInMainWorld('electron', {
     setDataSaved: () => ipcRenderer.send('data-is-saved'),
     deleteRc600FolderStructure: (folderName, selectedPath) =>
       ipcRenderer.invoke('delete-rc600-folder-structure', { folderName, selectedPath }),
+    getLastCreateRCFilesPath: () => ipcRenderer.invoke('get-last-create-rc-files-path'),
   },
 });

@@ -299,11 +299,17 @@ ipcMain.on('data-is-saved', () => {
 
 ipcMain.handle('open-folder-dialog', async () => {
   if (!mainWindow) return { canceled: true, filePaths: [] };
+
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
     title: 'Select Destination Folder',
   });
+  store.set('lastCreateRCFilesPath', result.filePaths[0]);
   return result;
+});
+
+ipcMain.handle('get-last-create-rc-files-path', () => {
+  return store.get('lastCreateRCFilesPath', '');
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -353,7 +359,7 @@ ipcMain.handle('populate-rc600-folders', async (event, { folderName, selectedPat
   if (process.env.NODE_ENV === 'development') {
     xmlDataTemplateFolder = path.join(app.getAppPath(), 'src', 'data', 'xmlDataTemplate');
   } else {
-    xmlDataTemplateFolder = process.resourcesPath;
+    xmlDataTemplateFolder = path.join(process.resourcesPath, 'xmlDataTemplate');
   }
   const dataFolder = path.join(selectedPath, folderName, 'DATA');
   const waveFolder = path.join(selectedPath, folderName, 'WAVE');

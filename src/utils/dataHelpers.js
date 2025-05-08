@@ -103,10 +103,10 @@ export async function createFolder() {
 export async function selectPath() {
   try {
     const result = await window.electron.ipcRenderer.invoke('open-folder-dialog');
-    if (result && result.filePaths && result.filePaths.length > 0) {
-      return [result.filePaths[0], ''];
+    if (!result || !result.filePaths || result.filePaths.length === 0) {
+      return ['', ''];
     }
-    return ['', ''];
+    return [result.filePaths[0], ''];
   } catch (err) {
     return ['', 'Error selecting folder path'];
   }

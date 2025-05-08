@@ -27,6 +27,22 @@ export default function ModalMain({ isOpen, onClose }) {
   const [operationStatus, setOperationStatus] = useState(null);
   const pathRef = useRef(null);
 
+  useEffect(() => {
+    if (!selectedTuning) {
+      const fetchLastCreateRCFilesPath = async () => {
+        try {
+          const lastPath = await window.electron.ipcRenderer.getLastCreateRCFilesPath();
+          if (lastPath) {
+            setSelectedPath(lastPath);
+          }
+        } catch (err) {
+          console.error('Error fetching last path:', err);
+        }
+      };
+      fetchLastCreateRCFilesPath();
+    }
+  }, [selectedTuning]);
+
   function handleFolderNameChange(e) {
     setFolderName(e.target.value);
     setError('');
@@ -35,7 +51,7 @@ export default function ModalMain({ isOpen, onClose }) {
   async function handleSelectPath() {
     const [path, error] = await selectPath();
     if (error) {
-      setError(error);
+      setError('');
     } else if (path) {
       setSelectedPath(path);
       setError('');
