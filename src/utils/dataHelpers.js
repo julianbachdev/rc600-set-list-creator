@@ -1,3 +1,4 @@
+console;
 export async function loadSetListsDataFromFile(
   chooseFolder,
   property1,
@@ -79,6 +80,7 @@ export function overWriteTextFile(song, overwrite) {
       : "You're about to create a new version of your file"
   );
   if (!confirmed || !song.name) return;
+
   window.electron.ipcRenderer
     .invoke('overwrite-text-file', song, overwrite)
     .then(result => {

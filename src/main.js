@@ -234,7 +234,12 @@ ipcMain.handle('overwrite-text-file', async (event, song, overwrite = false) => 
       .filter(line => !line.trim().startsWith('#'))
       .join('\n')
       .trimEnd();
-    const settingsLines = Object.entries(song.settings).map(([key, value]) => `# ${key}: ${value}`);
+
+    const newSettings = { ...song.settings };
+    delete newSettings.name; // delete name so it doesn't get save in new overwrite
+    newSettings.keyTrue = ''; // clear keyTrue so it saves as empty
+
+    const settingsLines = Object.entries(newSettings).map(([key, value]) => `# ${key}: ${value}`);
     const finalContent = `${filteredContent}\n\n${settingsLines.join('\n')}`;
     let filePath;
     const cleanName = sanitize(song.name.trim().replace(/\.txt$/i, ''));

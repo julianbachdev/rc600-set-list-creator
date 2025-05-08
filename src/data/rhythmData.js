@@ -60,8 +60,8 @@ export const rhythmMenuData = [
         pattern: [
           { name: '__2A_', value: 0 },
           { name: '__2B_', value: 1 },
-          { name: '__2As', value: 2 },
-          { name: '__2Bs', value: 3 },
+          { name: '__2AS', value: 2 },
+          { name: '__2BS', value: 3 },
           { name: '__2SWING_', value: 4 },
           { name: '__4A_', value: 5 },
           { name: '__4B_', value: 6 },
@@ -321,7 +321,7 @@ export const rhythmMenuData = [
           { name: '16BEAT2', value: 7 },
           { name: '16BEAT3', value: 8 },
           { name: 'SIDE STICK1', value: 9 },
-          { name: '8BEAT6', value: 10 }, // DUPLICATE INCLUDED IN HARDWARE
+          // { name: '8BEAT6', value: 10 }, // DUPLICATE INCLUDED IN HARDWARE
         ],
       },
       {
@@ -351,11 +351,11 @@ export const rhythmMenuData = [
           { name: '8BEAT4', value: 3 },
           { name: '8BEAT5', value: 4 },
           { name: '8BEAT6', value: 5 },
-          { name: '2xBD1', value: 6 },
-          { name: '2xBD2', value: 7 },
-          { name: '2xBD3', value: 8 },
-          { name: '2xBD4', value: 9 },
-          { name: '2xBD5', value: 10 },
+          { name: '2XBD1', value: 6 },
+          { name: '2XBD2', value: 7 },
+          { name: '2XBD3', value: 8 },
+          { name: '2XBD4', value: 9 },
+          { name: '2XBD5', value: 10 },
         ],
       },
       {
@@ -443,8 +443,8 @@ export const rhythmMenuData = [
         pattern: [
           { name: '__2A_', value: 16 },
           { name: '__2B_', value: 17 },
-          { name: '__2As', value: 18 },
-          { name: '__2Bs', value: 19 },
+          { name: '__2AS', value: 18 },
+          { name: '__2BS', value: 19 },
           { name: '__2SWING_', value: 20 },
           { name: '__4A_', value: 21 },
           { name: '__4B_', value: 22 },
